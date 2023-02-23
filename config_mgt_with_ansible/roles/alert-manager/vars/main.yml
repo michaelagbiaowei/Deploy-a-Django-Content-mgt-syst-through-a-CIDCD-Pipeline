@@ -1,8 +1,0 @@
----
-# vars file for alert-manager
-
-path_to_alertmanager: "/etc/prometheus/alertmanager.yml"
-
-path_to_alertmanager.service: "/etc/systemd/system/alertmanager.service"
-
-path_to_rules: "/etc/prometheus/rules.yml"

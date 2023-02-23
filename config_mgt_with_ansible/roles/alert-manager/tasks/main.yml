@@ -1,43 +1,52 @@
----
-# tasks file for alert-manager
+# ---
+# # tasks file for alert-manager
 
-- name: Get the latest Alert Manager binaries
-  shell: wget https://github.com/prometheus/alertmanager/releases/download/v0.25.0/alertmanager-0.25.0.linux-amd64.tar.gz
+# - name: Get the latest Alert Manager binaries
+#   shell: wget https://github.com/prometheus/alertmanager/releases/download/v0.25.0/alertmanager-0.25.0.linux-amd64.tar.gz
 
-- name: Then extract the tarball
-  command: tar xvfz alertmanager-0.25.0.linux-amd64.tar.gz
+# - name: Then extract the tarball
+#   command: tar xvfz alertmanager-0.25.0.linux-amd64.tar.gz
 
-- name: Copy the files to their destinations
-  shell: |
-    cp alertmanager-0.25.0.linux-amd64/alertmanager /usr/local/bin
-    cp alertmanager-0.25.0.linux-amd64/amtool /usr/local/bin/ 
+# - name: Copy the files to their destinations
+#   shell: |
+#     cp alertmanager-0.25.0.linux-amd64/alertmanager /usr/local/bin
+#     cp alertmanager-0.25.0.linux-amd64/amtool /usr/local/bin/ 
 
-- name: Create library folder
-  command: mkdir /var/lib/alertmanager
+# - name: Create library folder
+#   command: mkdir /var/lib/alertmanager
 
-- name: Remove the tarball
-  shell: rm -rf alertmanager*
+# - name: Remove the tarball
+#   shell: rm -rf alertmanager*
 
-- name: Create Alert Manager configuration fil
+- name: Create Alert Manager configuration file
   template: 
     src: alertmanager.yml.j2
-    dest: "${path_to_alertmanager}"
+    dest: /etc/prometheus/alertmanager.yml
 
 - name: Create systemd services for Prometheus and Node Exporter
-  template: 
-    src: alertmanager.service.j2
-    dest: "${path_to_alertmanager.service}"
+  copy: 
+    src: alertmanager.service
+    dest: /etc/systemd/system/alertmanager.service
 
 - name: Create alerting rules file
   template: 
     src: rules.yml.j2
-    dest: "${path_to_rules}"
+    dest: /etc/prometheus/rules.yml
 
 - name: Update the permissions for application files
   shell: chown -R prometheus:prometheus /etc/prometheus
 
-- name: Restart the Prometheus Service incase of failure
-  command: |
-    systemctl restart prometheus  
-    systemctl restart alertmanager
+- name: Start alertmanager service
+  service:
+    name: alertmanager
+    state: started
+    
+- name: Restart prometheus service
+  service:
+    name: prometheus
+    state: started
+    enabled: yes
+    enabled: yes
+
+
 
