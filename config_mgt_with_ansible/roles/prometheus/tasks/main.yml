@@ -1,72 +1,72 @@
-# - name: Create user for prometheus
-#   shell: useradd --no-create-home prometheus
+- name: Create user for prometheus
+  shell: useradd --no-create-home prometheus
 
-# - name: Create library and config folders
-#   command: |
-#     mkdir /etc/prometheus
-#     mkdir /var/lib/prometheus
+- name: Create library and config folders
+  command: |
+    mkdir /etc/prometheus
+    mkdir /var/lib/prometheus
 
-# - name: Get the latest Prometheus binaries
-#   shell: wget https://github.com/prometheus/prometheus/releases/download/v2.41.0/prometheus-2.41.0.linux-amd64.tar.gz
+- name: Get the latest Prometheus binaries
+  shell: wget https://github.com/prometheus/prometheus/releases/download/v2.41.0/prometheus-2.41.0.linux-amd64.tar.gz
 
-# - name: Extract the tarball
-#   command: tar xvfz prometheus-2.41.0.linux-amd64.tar.gz
+- name: Extract the tarball
+  command: tar xvfz prometheus-2.41.0.linux-amd64.tar.gz
 
-# - name: "move prometheus binary to /usr/local/bin"
-#   copy:
-#     src: prometheus-2.41.0.linux-amd64/prometheus
-#     dest: /usr/local/bin/prometheus
-#     remote_src: yes
-#     mode: "0777
+- name: "move prometheus binary to /usr/local/bin"
+  copy:
+    src: prometheus-2.41.0.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    remote_src: yes
+    mode: "0777
 
-# - name: "move promtool binary to /usr/local/bin"
-#   copy:
-#     src: prometheus-2.41.0.linux-amd64/promtool 
-#     dest: /usr/local/bin/promtool
-#     remote_src: yes
-#     mode: "0777"
+- name: "move promtool binary to /usr/local/bin"
+  copy:
+    src: prometheus-2.41.0.linux-amd64/promtool 
+    dest: /usr/local/bin/promtool
+    remote_src: yes
+    mode: "0777"
 
-# - name: "move consoles binary to /usr/local/bin"
-#   copy:
-#     src: prometheus-2.41.0.linux-amd64/consoles 
-#     dest: /etc/prometheus/consoles
-#     remote_src: yes
-#     mode: "0777"
+- name: "move consoles binary to /usr/local/bin"
+  copy:
+    src: prometheus-2.41.0.linux-amd64/consoles 
+    dest: /etc/prometheus/consoles
+    remote_src: yes
+    mode: "0777"
 
-# - name: "move console_libraries onsoles binary to /usr/local/bin"
-#   copy:
-#     src: prometheus-2.41.0.linux-amd64/console_libraries 
-#     dest: /etc/prometheus/console_libraries 
-#     remote_src: yes
-#     mode: "0777"
+- name: "move console_libraries onsoles binary to /usr/local/bin"
+  copy:
+    src: prometheus-2.41.0.linux-amd64/console_libraries 
+    dest: /etc/prometheus/console_libraries 
+    remote_src: yes
+    mode: "0777"
 
-# - name: Remove the tarball
-#   command: rm -rf prometheus-2.41.0.linux-amd64.tar.gz prometheus-2.41.0.linux-amd64
+- name: Remove the tarball
+  command: rm -rf prometheus-2.41.0.linux-amd64.tar.gz prometheus-2.41.0.linux-amd64
 
-# - name: Create initial Prometheus config
-#   template:
-#     src: prometheus.yml.j2
-#     dest: "/etc/prometheus/prometheus.yml"
+- name: Create initial Prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: "/etc/prometheus/prometheus.yml"
 
-# - name: Create systemd services for Prometheus and Node Exporter
-#   file: 
-#     src: prometheus.service
-#     dest: "/etc/systemd/system/prometheus.service"
+- name: Create systemd services for Prometheus and Node Exporter
+  file: 
+    src: prometheus.service
+    dest: "/etc/systemd/system/prometheus.service"
 
-# - name: Update the permissions for application files
-#   shell: |
-#     chown prometheus:prometheus /etc/prometheus
-#     chown prometheus:prometheus /usr/local/bin/prometheus
-#     chown prometheus:prometheus /usr/local/bin/promtool
-#     chown -R prometheus:prometheus /etc/prometheus/consoles
-#     chown -R prometheus:prometheus /etc/prometheus/console_libraries
-#     chown -R prometheus:prometheus /var/lib/prometheus
+- name: Update the permissions for application files
+  shell: |
+    chown prometheus:prometheus /etc/prometheus
+    chown prometheus:prometheus /usr/local/bin/prometheus
+    chown prometheus:prometheus /usr/local/bin/promtool
+    chown -R prometheus:prometheus /etc/prometheus/consoles
+    chown -R prometheus:prometheus /etc/prometheus/console_libraries
+    chown -R prometheus:prometheus /var/lib/prometheus
 
 - name: Run the services
-  command: systemctl daemon-reload
-    
-    # systemctl enable prometheus
-    # systemctl start prometheus
+  command: |
+    systemctl daemon-reload
+    systemctl enable prometheus
+    systemctl start prometheus
 
 - name: Check Services
   shell: systemctl status prometheus.service
