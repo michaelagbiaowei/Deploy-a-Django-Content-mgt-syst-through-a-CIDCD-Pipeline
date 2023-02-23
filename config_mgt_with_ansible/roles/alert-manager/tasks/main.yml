@@ -19,8 +19,8 @@
 #   shell: rm -rf alertmanager*
 
 - name: Create Alert Manager configuration file
-  template: 
-    src: alertmanager.yml.j2
+  copy: 
+    src: alertmanager.yml
     dest: /etc/prometheus/alertmanager.yml
 
 - name: Create systemd services for Prometheus and Node Exporter
@@ -29,8 +29,8 @@
     dest: /etc/systemd/system/alertmanager.service
 
 - name: Create alerting rules file
-  template: 
-    src: rules.yml.j2
+  copy: 
+    src: rules.yml
     dest: /etc/prometheus/rules.yml
 
 - name: Update the permissions for application files
