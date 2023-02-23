@@ -71,6 +71,9 @@
     state: started
     enabled: yes
 
-- name: Check Services
-  shell: systemctl status prometheus.service
+- name: Check if prometheus is accessible
+  uri:
+    url: http://localhost:9090
+    method: GET
+    status_code: 200
     
