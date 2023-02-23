@@ -17,7 +17,7 @@
     src: prometheus-2.41.0.linux-amd64/prometheus
     dest: /usr/local/bin/prometheus
     remote_src: yes
-    mode: "0777
+    mode: "0777"
 
 - name: "move promtool binary to /usr/local/bin"
   copy:
