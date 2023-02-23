@@ -69,5 +69,5 @@
     # systemctl start prometheus
 
 - name: Check Services
-  command: systemctl status prometheus.service
+  shell: systemctl status prometheus.service
     
