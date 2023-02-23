@@ -63,11 +63,11 @@
 #     chown -R prometheus:prometheus /var/lib/prometheus
 
 - name: Run the services
-  command: |
-    systemctl daemon-reload
-    systemctl enable prometheus
-    systemctl start prometheus
+  command: systemctl daemon-reload
+    
+    # systemctl enable prometheus
+    # systemctl start prometheus
 
 - name: Check Services
-  shell: |
-    systemctl status prometheus
+  shell: systemctl status prometheus
+    
