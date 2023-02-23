@@ -1,0 +1,8 @@
+---
+# vars file for prometheus
+
+path_to_prometheus: "/etc/prometheus/prometheus.yml"
+
+path_to_prometheus.service: "/etc/systemd/system/prometheus.service"
+
+

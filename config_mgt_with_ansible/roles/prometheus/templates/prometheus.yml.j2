@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 1s
+  evaluation_interval: 1s
+  external_labels:
+    monitor: "prometheus"
+
+rule_files:
+  - /etc/prometheus/rules.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - localhost:9093
+
+scrape_configs:
+  - job_name: "prometheus"
+
+    static_configs:
+      - targets: ["9ec2-3-210-183-241.compute-1.amazonaws.com:090"]
+
+  - job_name: "node_exporter"
+
+    static_configs:
+      - targets: ["ec2-44-204-196-45.compute-1.amazonaws.com:9100"]
