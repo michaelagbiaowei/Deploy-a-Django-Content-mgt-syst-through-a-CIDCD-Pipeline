@@ -49,7 +49,7 @@
     dest: "/etc/prometheus/prometheus.yml"
 
 - name: Create systemd services for Prometheus and Node Exporter
-  file: 
+  copy: 
     src: prometheus.service
     dest: "/etc/systemd/system/prometheus.service"
 
