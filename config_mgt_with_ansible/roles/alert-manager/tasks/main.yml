@@ -39,13 +39,13 @@
 - name: Start alertmanager service
   service:
     name: alertmanager
-    state: started
+    state: restarted
+    enabled: yes
     
 - name: Restart prometheus service
   service:
     name: prometheus
-    state: started
-    enabled: yes
+    state: restarted
     enabled: yes
 
 
