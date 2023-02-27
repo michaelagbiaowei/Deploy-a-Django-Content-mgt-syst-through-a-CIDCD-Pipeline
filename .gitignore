@@ -1,1 +1,3 @@
-docker.pem
+*.vscode
+Pipfile.lock
+keypair.pem

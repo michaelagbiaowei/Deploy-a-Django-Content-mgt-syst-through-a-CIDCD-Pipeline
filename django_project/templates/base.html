@@ -1,0 +1,118 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="{{ site_option.0.meta_description|default:"" }}">
+    <meta name="author" content="{{ site_option.0.meta_author|default:"" }}">
+    <link rel="icon" href="{% static 'img/favicons/favicon.ico' %}">
+
+    <title>{{ site_option.0.title|default:"" }}</title>
+
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="120x120" href="{% static 'img/favicons/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicons/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicons/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'img/favicons/site.webmanifest' %}">
+    <link rel="mask-icon" href="{% static 'img/favicons/safari-pinned-tab.svg' %}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+
+    <link href="{% static 'css/ui.css' %}" rel="stylesheet">
+
+    <!-- Facebook Open Graph -->
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="{{ site_option.0.title|default:"" }}" />
+    <meta property="og:description" content="{{ site_option.0.meta_description|default:"" }}" />
+    <meta property="og:image" content="{% static 'img/pythonbangla.jpg' %}" />
+
+
+    <!-- Header section from admin panel -->
+    {{ site_option.0.header|safe }}
+</head>
+
+<body>
+    <div class="container">
+        <header class="blog-header py-3">
+            <div class="row flex-nowrap justify-content-between align-items-center">
+                <!--
+          <div class="col-4 pt-1">
+            <a class="text-muted" href="#">Subscribe</a>
+          </div> -->
+                <div class="col-4 text-center">
+                    <a class="blog-header-logo text-dark" href="/">
+                        <img src="{% static 'img/python-logo.png' %}" alt="পাইথন বাংলা" height="80">
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <div class="nav-scroller py-1 mb-2" style="overflow:hidden;">
+                <div class="float-left"><nav class="nav">
+                        <a class="p-2 text-muted" href="/">Home</a>
+                    </nav></div>
+                <div class="float-right">
+                    <nav class="nav d-flex justify-content-end">
+                        {% for s in social %}
+                         <a class="p-2 text-muted" href="{{s.url}}" target="_blank"><img src="{% static 'img/social/icon-'%}{{s.name}}.png" alt="{{s.name|title}}" height="30"></a>
+                        {% endfor %}
+                    </nav>
+                </div>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+    
+    <div class="mb-4"></div>
+
+    <footer class="blog-footer">
+        <div class="row">
+            <div class="col-sm-4">
+                <p>Powered By <br>
+                    <a href="https://www.djangoproject.com" target="_blank">Django</a> |
+                    <a href="https://getbootstrap.com/" target="_blank">Bootstrap</a> |
+                    <a href="https://www.postgresql.org" target="_blank">PostgreSQL</a>
+                    <br>
+                    <a href="https://jquery.com/" target="_blank">JQuery</a> | 
+                    <a href="https://github.com/cowboy/javascript-linkify" target="_blank">linkify</a>
+
+                </p>
+            </div>
+            <div class="col-sm-4">
+                <p>
+                    Developed by
+                    <a href="https://twitter.com/mahmudahsan" target="_blank">Mahmud Ahsan</a>
+                    <br> © {% now "Y" as current_year %} {{ current_year }}
+                    <a href="https://twitter.com/mahmudahsan" target="_blank">Mahmud Ahsan</a>
+                </p>
+            </div>
+            <div class="col-sm-4">
+                <p>
+                    <a href="#">Back to top</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+
+    <script src="{% static 'js/vendor/holder.min.js' %}"></script>
+
+    {% block script %}
+    {% endblock %}
+</body>
+</html>
