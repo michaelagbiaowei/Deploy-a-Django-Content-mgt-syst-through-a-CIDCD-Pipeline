@@ -1,0 +1,34 @@
+FROM  ubuntu:latest
+
+# Create working dir
+WORKDIR /code
+
+# Copy Pipfile to working dir
+COPY . /code
+
+# Install Python3 and pip
+RUN apt-get update && \
+    apt-get install --no-install-recommends -y \
+    python3.10 python3-pip python3.10-dev
+
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y pyscopg2-binary python3-dev \
+    libpq-dev postgresql-dev gcc musl-dev
+
+# Install pipenv
+RUN pip install pipenv
+
+# Install psycopg2
+RUN pip install psycopg2-binary
+# RUN pip install psycopg2-binary==2.8.2
+RUN pip install psycopg2
+
+# Install django framwork
+RUN pipenv install django
+RUN pipenv shell
+
+# runs the production server
+EXPOSE 4567
+ENTRYPOINT ["python", "/code/manage.py"]
+CMD ["runserver", "0.0.0.0:4567"]
