@@ -25,7 +25,7 @@ RUN pip install psycopg2
 
 # Install django framwork
 RUN pipenv install django
-RUN pipenv shell
+# RUN pipenv shell
 
 # runs the production server
 EXPOSE 4567
