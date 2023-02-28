@@ -25,7 +25,7 @@ RUN pip install psycopg2
 
 # Install django framwork
 RUN pipenv install django
-# RUN pipenv shell
+RUN python3 manage.py migrate
 
 # runs the production server
 EXPOSE 8000
