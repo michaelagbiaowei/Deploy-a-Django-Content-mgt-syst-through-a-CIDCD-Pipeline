@@ -1,6 +1,15 @@
-version: "3.9"
+version: "3"
 
 services:
+  app:
+    command: sh -c "pipenv shell"
+    environment:
+      APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/django
   db:
     image: postgres:13-alpine
     restart: always
@@ -11,16 +20,6 @@ services:
       - '5432:5432'
     volumes: 
       - db:/var/lib/postgresql/data
-
-  app:
-    command: sh -c "pipenv shell"
-    environment:
-      APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
-    build: .
-    ports:
-      - "8000:8000"
-    volumes:
-      - .:/django
 
 networks:
   internal-network:

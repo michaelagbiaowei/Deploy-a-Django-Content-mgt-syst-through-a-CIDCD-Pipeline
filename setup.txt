@@ -28,3 +28,4 @@ CREATE USER user WITH SUPERUSER;
 CREATE DATABASE db;
 
 DOCKER
+docker-compose config
