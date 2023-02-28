@@ -28,6 +28,6 @@ RUN pipenv install django
 # RUN pipenv shell
 
 # runs the production server
-EXPOSE 4567
+EXPOSE 8000
 ENTRYPOINT ["python", "/code/manage.py"]
-CMD ["runserver", "0.0.0.0:4567"]
+CMD ["runserver", "0.0.0.0:8000"]
