@@ -14,7 +14,7 @@ RUN apt-get update && \
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y libpq-dev \
-    gcc musl-dev locale
+    gcc musl-dev
 
 # Install pipenv
 RUN pip install pipenv
@@ -25,9 +25,13 @@ RUN pip install psycopg2
 
 # Install django framwork
 RUN pipenv install django
-# RUN python3 manage.py migrate
+
+# Make it executable
+RUN chmod +x .entrypoint.sh
 
 # runs the production server
 EXPOSE 8000
-# ENTRYPOINT ["python", "manage.py"]
-CMD ["python" "manage.py" "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/entrypoint.sh"]
+# CMD ["pipenv", "shell"]
+# CMD ["python3", "manage.py", "migrate"]
+# CMD ["python3", "manage.py", "runserver"]

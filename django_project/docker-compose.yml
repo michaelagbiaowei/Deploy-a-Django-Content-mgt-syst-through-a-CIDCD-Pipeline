@@ -2,7 +2,6 @@ version: "3"
 
 services:
   app:
-    command: sh -c "pipenv shell"
     environment:
       APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
     build: .
