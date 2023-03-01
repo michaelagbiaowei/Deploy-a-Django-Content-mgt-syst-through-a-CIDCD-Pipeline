@@ -27,7 +27,7 @@ RUN pip install psycopg2
 RUN pipenv install django
 
 # Make it executable
-RUN chmod +x .entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # runs the production server
 EXPOSE 8000
