@@ -1,10 +1,10 @@
 FROM  ubuntu:latest
 
 # Create working dir
-WORKDIR /code
+# WORKDIR /code
 
 # Copy Pipfile to working dir
-COPY . /code
+COPY . .
 
 # Install Python3 and pip
 RUN apt-get update && \
@@ -14,7 +14,7 @@ RUN apt-get update && \
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y libpq-dev \
-    gcc musl-dev
+    gcc musl-dev locale
 
 # Install pipenv
 RUN pip install pipenv
@@ -29,5 +29,5 @@ RUN pipenv install django
 
 # runs the production server
 EXPOSE 8000
-ENTRYPOINT ["python", "manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+# ENTRYPOINT ["python", "manage.py"]
+CMD ["python" "manage.py" "runserver", "0.0.0.0:8000"]
