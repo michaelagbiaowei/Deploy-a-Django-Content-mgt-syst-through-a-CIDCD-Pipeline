@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'pythonbangla_project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "[postgresdb]",
+        "NAME": "postgresdb",
         "USER": "postgresuser",
         "PASSWORD": "password",
         "HOST": "localhost",
