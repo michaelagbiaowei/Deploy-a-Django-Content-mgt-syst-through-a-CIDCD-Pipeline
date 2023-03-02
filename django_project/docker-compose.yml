@@ -2,8 +2,8 @@ version: "3"
 
 services:
   app:
-    environment:
-      APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+    # environment:
+      # APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
     build: .
     ports:
       - "8000:8080"
