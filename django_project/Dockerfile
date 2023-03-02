@@ -1,25 +1,27 @@
-FROM  ubuntu:latest
+FROM python:3.10 AS base
 
-# Copy Pipfile to working dir
-COPY . ./app
+# Set ENV variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-# Install Python3 and pip
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
-    python3.10 python3-pip python3.10-dev
+# Create working dir
+WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y libpq-dev \
-    gcc musl-dev
+# Copy files to working dir
+COPY . /app
 
 # Install pipenv
 RUN cd /app
 RUN pip install pipenv
 
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y libpq-dev \
+    gcc musl-dev gdal-bin
+
 # Install psycopg2
-RUN pip install psycopg2-binary
-RUN pip install psycopg2
+RUN pipenv install psycopg2-binary
+RUN pipenv install psycopg2
 
 # Install django framwork
 RUN pipenv install django
@@ -29,4 +31,4 @@ RUN chmod +x /app/entrypoint.sh
 
 # runs the production server
 EXPOSE 8000
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]

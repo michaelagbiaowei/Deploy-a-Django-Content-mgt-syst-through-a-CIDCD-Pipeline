@@ -2,26 +2,31 @@ version: "3"
 
 services:
   app:
-    environment:
-      APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
+    # environment:
+      # APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
     build: .
     ports:
-      - "8000:8000"
+      - "8000:8080"
     volumes:
       - .:/django
+    networks: 
+      - app_network
   db:
     image: postgres:13-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+        POSTGRES_DB: postgresdb
+        POSTGRES_USER: postgresuser
+        POSTGRES_PASSWORD: password
     ports:
       - '5432:5432'
     volumes: 
       - db:/var/lib/postgresql/data
+    networks: 
+      - app_network
 
 networks:
-  internal-network:
+  app_network:
     driver: bridge
     name: django-framwork
 

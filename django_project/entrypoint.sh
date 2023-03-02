@@ -1,7 +1,5 @@
 #!/bin/bash
-# entrypoint.sh
-# do some stuff here
-pipenv shell
-python3 /app/manage.py migrate
-python3 /app/manage.py runserver
+# pipenv shell
+pipenv run python3 /app/manage.py migrate
+pipenv run python3 /app/manage.py runserver
 exec "$@"
