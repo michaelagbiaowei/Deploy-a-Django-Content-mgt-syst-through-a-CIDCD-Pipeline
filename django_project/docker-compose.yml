@@ -12,14 +12,13 @@ services:
     networks: 
       - app_network
   db:
-    image: postgres:13-alpine
+    image: postgres:13
     restart: always
     environment:
-        POSTGRES_DB: postgres
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-    ports:
-      - '5432:5432'
+        POSTGRES_DB: mydb
+        POSTGRES_USER: myuser
+        POSTGRES_PASSWORD: mypasswd
+
     volumes: 
       - db:/var/lib/postgresql/data
     networks: 
