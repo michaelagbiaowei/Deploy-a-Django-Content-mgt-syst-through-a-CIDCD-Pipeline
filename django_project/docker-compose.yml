@@ -15,9 +15,9 @@ services:
     image: postgres:13
     restart: always
     environment:
-        POSTGRES_DB: "mydb"
-        POSTGRES_USER: "myuser"
-        POSTGRES_PASSWORD: "mypasswd"
+        POSTGRES_DB: "postgres"
+        POSTGRES_USER: "postgres"
+        POSTGRES_PASSWORD: "postres"
 
     volumes: 
       - db:/var/lib/postgresql/data
