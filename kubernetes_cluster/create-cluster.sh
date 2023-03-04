@@ -4,8 +4,8 @@
 
 # Step 1:
 # Create the database-service cluster
-kubectl apply -f postgres/service.yaml 
+kubectl apply -f postgres/service.yml 
 
 # Step 2:
 # Create the deployment-service cluster
-kubectl apply -f django_project-app/deployment.yaml
+kubectl apply -f django_project-app/deployment.yml
