@@ -1,0 +1,94 @@
+# To link a postgres container to an app container using kubernetes, you need to follow these steps:
+
+# Create a postgres docker image1 or use an existing one from the public registry.
+# Create a config map for storing postgres configurations1.
+# Create a persistent storage volume for postgres data1.
+# Create a postgres deployment that uses the image, config map and volume1.
+# Create a postgres service that exposes the postgres port and allows other pods to access it1.
+# In your app container, use the service name as the host name for connecting to postgres2.
+# Here is an example script that shows how to do this:
+# In your app container, you can use postgres-service as the host name for connecting to postgres. For example:
+
+# import psycopg2
+# conn = psycopg2.connect(host="postgres-service", database="mydb", user="myuser", password="mypass")
+
+
+# Postgres config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: mydb
+  POSTGRES_USER: myuser
+  POSTGRES_PASSWORD: mypass
+
+# Postgres storage volume
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+
+# Postgres deployment
+apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: postgres-deployment 
+spec:
+  selector:
+    matchLabels:
+      app: postgres 
+      tier: backend 
+      track: stable 
+  strategy:
+    type: Recreate 
+  template:
+    metadata:
+      labels:
+        app: postgres 
+        tier: backend 
+        track: stable 
+    spec:
+      containers:
+      - image: bitnami/postgresql # use your own image here if you have one 
+        name: postgres 
+        envFrom:
+        - configMapRef:
+            name: postgres-config  
+        ports:
+        - containerPort: 5432 
+          name :postgres-port  
+        volumeMounts :
+        - mountPath : /bitnami/postgresql # change this according to your image  
+          name :postgres-storage 
+
+      volumes :
+      - name :postgres-storage  
+        persistentVolumeClaim :
+          claimName :postgres-pv-claim 
+
+# Postgres service      
+apiVersion :v1  
+kind :Service  
+metadata :
+   name :postgres-service   
+   labels :
+     app :postgres   
+spec :
+   ports :
+   - port :5432   
+     targetPort :5432   
+   selector :
+     app :postgres   
+     tier :backend   
+     track :stable 

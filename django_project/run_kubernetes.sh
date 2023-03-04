@@ -11,7 +11,7 @@ dockerpath=maiempire/django_project-app
 
 # Step 2
 # Run the Docker Hub container with kubernetes
-kubectl run django_project-app \
+kubectl run django \
 	--image=$dockerpath \
 	--port=80 
 
@@ -21,4 +21,4 @@ kubectl get pods
 
 # Step 4:
 # Forward the container port to a host
-kubectl port-forward django_project-app 8000:80
+kubectl port-forward django 8000:80
