@@ -63,19 +63,19 @@ spec:
       - image: bitnami/postgresql # use your own image here if you have one 
         name: postgres 
         envFrom:
-        - configMapRef:
-            name: postgres-config  
+          - configMapRef:
+              name: postgres-config  
         ports:
-        - containerPort: 5432 
-          name :postgres-port  
+          - containerPort: 5432 
+            name :postgres-port  
         volumeMounts :
-        - mountPath : /bitnami/postgresql # change this according to your image  
-          name :postgres-storage 
+          - mountPath : /bitnami/postgresql # change this according to your image  
+            name :postgres-storage 
 
       volumes :
-      - name :postgres-storage  
-        persistentVolumeClaim :
-          claimName :postgres-pv-claim 
+        - name :postgres-storage  
+          persistentVolumeClaim :
+            claimName :postgres-pv-claim 
 
 # Postgres service      
 apiVersion :v1  

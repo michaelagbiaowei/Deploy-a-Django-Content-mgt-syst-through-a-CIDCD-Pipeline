@@ -1,0 +1,34 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+      tier: backend
+      track: stable
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgres
+        tier: backend
+        track: stable
+    spec:
+      containers:
+        - image: postgres:13
+          name: postgres
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          ports:
+            port: 5432 name :postgres-port
+          volumeMounts:
+            mountPath: /postgres:13
+            name: postgres-volume
+      volumes:
+        - name:postgres-storage: null
+          persistentVolumeClaim: claimName :postgres-pv-claim
