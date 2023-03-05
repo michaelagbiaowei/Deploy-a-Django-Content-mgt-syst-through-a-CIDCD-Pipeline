@@ -29,4 +29,4 @@ CREATE DATABASE db;
 
 DOCKER
 docker-compose config
-kubectl create configmap django-config-map --from-file=db-credentials.txt
+kubectl create configmap django-config-map --from-file=kuberntes_cluster/configmap.yml
