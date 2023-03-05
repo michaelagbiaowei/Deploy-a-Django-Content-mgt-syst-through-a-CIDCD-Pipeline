@@ -11,4 +11,4 @@ kubectl apply -f service.yml
 
 # Step 2:
 # Create the deployment-service cluster
-kubectl apply -f django-app-deployment.yml
+# kubectl apply -f django-app-deployment.yml

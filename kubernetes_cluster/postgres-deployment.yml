@@ -25,7 +25,7 @@ spec:
             - configMapRef:
                 name: postgres-config
           ports:
-            port: 5432 name :postgres-port
+            - containerPort: 5432 name :postgres-port
           volumeMounts:
             mountPath: /postgres:13
             name: postgres-volume

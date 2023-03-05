@@ -21,10 +21,10 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: mydb
-  POSTGRES_USER: myuser
-  POSTGRES_PASSWORD: mypass
-
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+---
 # Postgres storage volume
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -38,7 +38,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-
+---
 # Postgres deployment
 apiVersion: apps/v1beta2 # for versions before 1.9.0 use apps/v1beta2
 kind: Deployment
@@ -60,7 +60,7 @@ spec:
         track: stable 
     spec:
       containers:
-      - image: bitnami/postgresql # use your own image here if you have one 
+      - image: postgres:13 # use your own image here if you have one 
         name: postgres 
         envFrom:
           - configMapRef:
@@ -69,19 +69,19 @@ spec:
           - containerPort: 5432 
             name :postgres-port  
         volumeMounts :
-          - mountPath : /bitnami/postgresql # change this according to your image  
+          - mountPath : /postgres:13 # change this according to your image  
             name :postgres-storage 
 
       volumes :
         - name :postgres-storage  
           persistentVolumeClaim :
             claimName :postgres-pv-claim 
-
+---
 # Postgres service      
-apiVersion :v1  
-kind :Service  
+apiVersion: v1  
+kind: Service  
 metadata :
-   name :postgres-service   
+   name: postgres-service   
    labels :
      app :postgres   
 spec :
