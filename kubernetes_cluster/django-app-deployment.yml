@@ -1,3 +1,26 @@
+# To link a django docker container to a postgres service kubernetes, you need to follow these steps:
+
+# Create a django docker image1 or use an existing one from the public registry.
+# Create a django deployment that uses the image and sets the environment variables for connecting to postgres1.
+# Create a django service that exposes the django port and allows external access1.
+# Here is an example script that shows how to do this:
+
+
+# In your django settings.py file, you can use DATABASE_HOST, DATABASE_NAME, DATABASE_USER and DATABASE_PASSWORD as the database parameters for connecting to postgres. For example:
+
+# import os
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('DATABASE_NAME'),
+#         'USER': os.environ.get('DATABASE_USER'),
+#         'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+#         'HOST': os.environ.get('DATABASE_HOST'),
+#     }
+# }
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
