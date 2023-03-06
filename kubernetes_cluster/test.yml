@@ -25,5 +25,6 @@ spec:
         - name: postgres-volume
           mountPath: /postgres       
       volumes:
-      - name:postgres-storage: null
-        persistentVolumeClaim: claimName:postgres-pv-claim
+      - name: postgres-storage
+        persistentVolumeClaim: 
+          claimName: postgres-pv-claim

@@ -1,63 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-deployment
+  name: postgres-deployment
   labels:
-    app: my-app
+    app: postgres
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: my-app
+      app: postgres
   template:
     metadata:
       labels:
-        app: my-app
+        app: postgres
     spec:
       containers:
-      - name: my-container
-        image: my-image:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: MY_ENV_VAR
-          value: "my-value"
-
-
-
-
-
-
-
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-deployment
-  labels:
-    app: my-app
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-      - name: my-container
-        image: my-image:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: MY_ENV_VAR
-          value: "my-value"
-        volumeMounts:
-        - name: my-volume
-          mountPath: /data
+        - name: postgres
+          image: postgres:13
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
       volumes:
-      - name: my-volume
-        configMap:
-          name: my-configmap
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
