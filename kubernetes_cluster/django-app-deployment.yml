@@ -3,7 +3,6 @@
 # Create a django docker image1 or use an existing one from the public registry.
 # Create a django deployment that uses the image and sets the environment variables for connecting to postgres1.
 # Create a django service that exposes the django port and allows external access1.
-# Here is an example script that shows how to do this:
 
 
 # In your django settings.py file, you can use DATABASE_HOST, DATABASE_NAME, DATABASE_USER and DATABASE_PASSWORD as the database parameters for connecting to postgres. For example:
@@ -47,13 +46,21 @@ spec:
           env :
             - name : DATABASE_HOST # environment variable for database host 
               value : postgres # value of database host (same as service name)  
+              
             - name : DATABASE_USER # environment variable for database user  
               valueFrom :
                 secretKeyRef :
-                  name : postgres # secret containing database credentials  
-                  key : username  
+                  name : postgres-config # secret containing database credentials  
+                  key : POSTGRES_USER  
+
             - name : DATABASE_PASSWORD # environment variable for database password  
               valueFrom :
                 secretKeyRef :
-                  name : postgres # secret containing database credentials  
-                  key : password  
+                  name : postgres-config # secret containing database credentials  
+                  key : POSTGRES_PASSWORD 
+            
+            - name : DATABASE_DB # environment variable for database password  
+              valueFrom :
+                secretKeyRef :
+                  name : postgres-config # secret containing database credentials  
+                  key : POSTGRES_DB 

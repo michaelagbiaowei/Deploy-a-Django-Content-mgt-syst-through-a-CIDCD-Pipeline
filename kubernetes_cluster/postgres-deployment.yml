@@ -1,5 +1,5 @@
 ---
-apiVersion: apps/v1
+apiVersion: v1
 kind: Deployment
 metadata:
   name: postgres-deployment
@@ -25,7 +25,7 @@ spec:
             - configMapRef:
                 name: postgres-config
           ports:
-            - containerPort: 5432 name :postgres-port
+            - containerPort: 5432
           volumeMounts:
             mountPath: /postgres
             name: postgres-volume
