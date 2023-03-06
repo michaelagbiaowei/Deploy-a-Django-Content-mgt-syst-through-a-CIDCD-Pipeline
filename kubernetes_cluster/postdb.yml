@@ -18,15 +18,31 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pv-claim
+  name: backend-claim
   labels:
     app: postgres
 spec:
   accessModes:
     - ReadWriteOnce
+  volumeMode: Filesystem
   resources:
     requests:
-      storage: 1Gi
+      storage: 8Gi
+  storageClassName: slow
+  
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: postgres-pv-claim
+#   labels:
+#     app: postgres
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 1Gi
+#      storageClassName: slow
 
 ---
 apiVersion: apps/v1
@@ -54,8 +70,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: postgres-config
-          ports:
-            - containerPort: 5432 name :postgres-port
+           ports:
+           - containerPort: 5432
           volumeMounts:
             mountPath: /postgres
             name: postgres-volume
