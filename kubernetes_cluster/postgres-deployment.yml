@@ -27,8 +27,8 @@ spec:
           ports:
             - containerPort: 5432 name :postgres-port
           volumeMounts:
-            mountPath: /postgres:13
+            mountPath: /postgres
             name: postgres-volume
       volumes:
         - name:postgres-storage: null
-          persistentVolumeClaim: claimName :postgres-pv-claim
+          persistentVolumeClaim: claimName:postgres-pv-claim
