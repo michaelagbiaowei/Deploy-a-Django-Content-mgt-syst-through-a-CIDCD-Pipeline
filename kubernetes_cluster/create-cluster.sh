@@ -6,7 +6,8 @@
 # Create the database-service cluster
 # kubectl apply -f configmap.yml
 # kubectl apply -f storage.yml
-kubectl apply -f postgres-deployment.yml
+# kubectl apply -f database.yml
+kubectl apply -f test.yml
 # kubectl apply -f service.yml 
 # # kubectl apply -f postdb.yml
 

@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  labels:
+    app: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: MY_ENV_VAR
+          value: "my-value"
+
+
+
+
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+  labels:
+    app: my-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: my-image:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: MY_ENV_VAR
+          value: "my-value"
+        volumeMounts:
+        - name: my-volume
+          mountPath: /data
+      volumes:
+      - name: my-volume
+        configMap:
+          name: my-configmap
