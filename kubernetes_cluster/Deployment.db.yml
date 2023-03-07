@@ -1,0 +1,95 @@
+# To link a postgres container to an app container using kubernetes, you need to follow these steps:
+
+# Create a postgres docker image1 or use an existing one from the public registry.
+# Create a config map for storing postgres configurations1.
+# Create a persistent storage volume for postgres data1.
+# Create a postgres deployment that uses the image, config map and volume1.
+# Create a postgres service that exposes the postgres port and allows other pods to access it1.
+# In your app container, use the service name as the host name for connecting to postgres2.
+# Here is an example script that shows how to do this:
+# In your app container, you can use postgres-service as the host name for connecting to postgres. For example:
+
+# import psycopg2
+# conn = psycopg2.connect(host="postgres-service", database="mydb", user="myuser", password="mypass")
+
+---
+# Postgres config map
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: postgres
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+
+---
+# Postgres storage volume
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backend-claim
+  labels:
+    app: postgres
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 8Gi
+  storageClassName: slow
+
+---  
+# postgres deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:13
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+
+---
+# Postgres service 
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: postgres-container
+    tier: backend
+  name: postgres
+spec:
+  ports:
+  - port: 5432
+    protocol: TCP
+  selector:
+    app: postgres
+  sessionAffinity: None
+  type: ClusterIP

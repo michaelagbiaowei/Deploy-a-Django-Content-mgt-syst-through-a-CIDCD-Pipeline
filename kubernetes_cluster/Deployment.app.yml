@@ -25,7 +25,7 @@ kind: Deployment
 metadata:
   name: django-app-deployment
 spec:
-  replicas: 3 # number of pods to run at any given time 
+  replicas: 1s # number of pods to run at any given time 
   selector:
     matchLabels:
       app: django-app # label used to identify pod 
