@@ -31,3 +31,6 @@ DOCKER
 docker-compose config
 kubectl create configmap django-config-map --from-file=configmap.yml
 kubectl edit configmap django-config-map
+
+export AWS_CONFIG_FILE=~/.aws/config
+export AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
