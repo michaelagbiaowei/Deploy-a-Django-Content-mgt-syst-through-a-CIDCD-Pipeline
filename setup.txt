@@ -34,3 +34,147 @@ kubectl edit configmap django-config-map
 
 export AWS_CONFIG_FILE=~/.aws/config
 export AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
+
+
+
+HTTP response codes are numerical values that indicate whether a specific HTTP request has been successfully completed or not1. They are grouped into five classes: 1xx (informational), 2xx (success), 3xx (redirection), 4xx (client error) and 5xx (server error)12.
+
+Alertmanager is a tool that handles alerts sent by Prometheus server and notifies users via various methods3. Alertmanager can be configured with YAML files that define alerting rules4.
+
+To write alertmanager rules for http response codes, you need to specify the following elements:
+
+alert: The name of the alert
+expr: The expression that evaluates to a boolean value
+for: The duration that the expression must be true before firing an alert
+labels: The key-value pairs that are attached to the alert
+annotations: The key-value pairs that provide additional information about the alert
+For example, you can write a rule like this:
+
+===========================================================================================================
+### SERVER DOWN
+alert: ServerDown
+expr: probe_success == 0
+for: 5m
+labels:
+  severity: critical
+annotations:
+  summary: "Server {{ $labels.instance }} is down"
+  description: "The server {{ $labels.instance }} has not responded to HTTP requests for more than 5 minutes."
+  
+This rule will fire an alert named ServerDown if the probe_success metric (which indicates whether an HTTP request was successful or not) is equal to zero for more than five minutes. The alert will have a label severity with value critical and annotations summary and description with values that include the instance label of the target server.
+
+===========================================================================================================
+You want to write alerts for 1xx errors, which are informational responses. These responses indicate that the request has been received and understood, but not yet acted upon.
+
+One way to write alerts for 1xx errors is similar to writing alerts for 4xx or 5xx errors. You can use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 1xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"1.."}[30m])
+
+### 1XX
+alert: InformationalResponse
+expr: count_over_time(http_response_http_response_code{status_code=~"1.."}[30m]) > 10
+for: 10m
+labels:
+  severity: info
+annotations:
+  summary: "Server {{ $labels.instance }} has too many informational responses"
+  description: "The server {{ $labels.instance }} has more than 10 requests with status code 1xx in the last 30 minutes.
+  
+This rule will fire an alert named InformationalResponse if there are more than 10 requests with status code 1xx in the last 30 minutes for any instance. The alert will have a label severity with value info and annotations summary and description with values that include the instance label of the target server.
+
+You can adjust the expression, threshold, duration and labels according to your needs.
+
+However, you may not need to write alerts for 1xx errors unless you have a specific reason to do so. These responses are usually transient and do not indicate any problem with your server or client.
+===========================================================================================================
+
+These responses indicate that the request was successfully received, understood and accepted.
+
+One way to write alerts for 2xx errors is similar to writing alerts for 1xx, 4xx or 5xx errors. You can use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 2xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"2.."}[30m])
+
+This expression will count how many requests have a status code that starts with 2 in the last 30 minutes. You can then use this expression as part of your alerting rule, such as:
+### 2XX
+alert: SuccessfulResponse
+expr: count_over_time(http_response_http_response_code{status_code=~"2.."}[30m]) < 10
+for: 10m
+labels:
+  severity: warning
+annotations:
+  summary: "Server {{ $labels.instance }} has too few successful responses"
+  description: "The server {{ $labels.instance }} has less than 10 requests with status code 2xx in the last 30 minutes."
+
+This rule will fire an alert named SuccessfulResponse if there are less than 10 requests with status code 2xx in the last 30 minutes for any instance. The alert will have a label severity with value warning and annotations summary and description with values that include the instance label of the target server.
+
+You can adjust the expression, threshold, duration and labels according to your needs.
+
+However, you may not need to write alerts for 2xx errors unless you have a specific reason to do so. These responses are usually expected and do not indicate any problem with your server or client.
+==============================================================================================================================================
+
+These responses indicate that the client needs to take additional action to complete the request.
+
+One way to write alerts for 3xx errors is similar to writing alerts for 1xx, 2xx, 4xx or 5xx errors. You can use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 3xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"3.."}[30m])
+This expression will count how many requests have a status code that starts with 3 in the last 30 minutes. You can then use this expression as part of your alerting rule, such as:
+
+### 3XX
+alert: RedirectionResponse
+expr: count_over_time(http_response_http_response_code{status_code=~"3.."}[30m]) > 10
+for: 10m
+labels:
+  severity: info
+annotations:
+  summary: "Server {{ $labels.instance }} has too many redirection responses"
+  description: "The server {{ $labels.instance }} has more than 10 requests with status code 3xx in the last 30 minutes."
+
+These responses indicate that the client needs to take additional action to complete the request.
+
+One way to write alerts for 3xx errors is similar to writing alerts for 1xx, 2xx, 4xx or 5xx errors. You can use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 3xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"3.."}[30m])
+This expression will count how many requests have a status code that starts with 3 in the last 30 minutes. You can then use this expression as part of your alerting rule, such as:
+==================================================================================================================================================
+
+I see. You want to write alerts for 4xx errors, which are client error responses. These errors indicate that something went wrong on the client side and prevented it from making a valid request.
+
+One way to write alerts for 4xx errors is similar to writing alerts for 5xx errors. You can use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 4xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"4.."}[30m])
+
+This expression will count how many requests have a status code that starts with 4 in the last 30 minutes. You can then use this expression as part of your alerting rule, such as:
+
+### 4XX
+alert: ClientError
+expr: count_over_time(http_response_http_response_code{status_code=~"4.."}[30m]) > 10
+for: 10m
+labels:
+  severity: warning
+annotations:
+  summary: "Client {{ $labels.instance }} has too many errors"
+  description: "The client {{ $labels.instance }} has more than 10 requests with status code 4xx in the last 30 minutes."
+
+This rule will fire an alert named ClientError if there are more than 10 requests with status code 4xx in the last 30 minutes for any instance. The alert will have a label severity with value warning and annotations summary and description with values that include the instance label of the target client.
+
+You can adjust the expression, threshold, duration and labels according to your needs.
+============================================================================================================================
+5xx errors, which are server error responses. These errors indicate that something went wrong on the server side and prevented it from fulfilling your request.
+
+One way to write alerts for 5xx errors is to use a metric that records the status code of each HTTP request, such as http_response_http_response_code1. You can then use a Prometheus expression to count how many requests have a status code that matches 5xx in a given time window, such as:
+
+count_over_time(http_response_http_response_code{status_code=~"5.."}[30m])
+This expression will count how many requests have a status code that starts with 5 in the last 30 minutes. You can then use this expression as part of your alerting rule, such as:
+
+### 5XX
+alert: ServerError
+expr: count_over_time(http_response_http_response_code{status_code=~"5.."}[30m]) > 10
+for: 10m
+labels:
+  severity: warning
+annotations:
+  summary: "Server {{ $labels.instance }} has too many errors"
+  description: "The server {{ $labels.instance }} has more than 10 requests with status code 5xx in the last 30 minutes."
+
+This rule will fire an alert named ServerError if there are more than 10 requests with status code 5xx in the last 30 minutes for any instance. The alert will have a label severity with value warning and annotations summary and description with values that include the instance label of the target server.
+
+You can adjust the expression, threshold, duration and labels according to your needs.
