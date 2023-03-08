@@ -178,3 +178,19 @@ annotations:
 This rule will fire an alert named ServerError if there are more than 10 requests with status code 5xx in the last 30 minutes for any instance. The alert will have a label severity with value warning and annotations summary and description with values that include the instance label of the target server.
 
 You can adjust the expression, threshold, duration and labels according to your needs.
+====================================================================================================================
+to know how to reference multiple rules.yml files in prometheus.yml file.
+One way to do that is to use a glob pattern in the rule_files field of your prometheus.yml file, such as:
+
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+This will load all files with .yml extension under /etc/prometheus/rules directory. You can also use subdirectories or different extensions if you prefer.
+
+Another way to do that is to list each file separately in the rule_files field of your prometheus.yml file, such as:
+
+rule_files:
+  - "/etc/prometheus/rules/alerts.yml"
+  - "/etc/prometheus/rules/recordings.yml"
+This will load only the files specified under /etc/prometheus/rules directory. You can also use different paths or names if you prefer.
+
+You can reload your rule files at runtime by sending SIGHUP signal to your Prometheus process1.
