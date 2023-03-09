@@ -3,8 +3,8 @@ git clone https://github.com/mahmudahsan/pythonbangla.com.git djangodemo
 cd djangodemo
 sudo apt install python3-pip
 pip install pipenv
-suo apt install pipenv
-pip intstall pyscopg2-binary
+sudo apt install pipenv
+pip install psycopg2-binary
 sudo apt install python3-dev libpq-dev
 pip install psycopg2
 pipenv install django
