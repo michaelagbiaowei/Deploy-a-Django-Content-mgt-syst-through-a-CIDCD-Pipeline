@@ -13,8 +13,10 @@ minikube version
 
 # Step 3:
 # Start the kubernetes cluster
-minikube start
+# minikube start
+sudo minikube start --force
 
 # Step 4:
 # List kubernetes pods
-minikube kubectl -- get pods -A
+# minikube kubectl -- get pods -A
+sudo minikube kubectl -- get pods -A
