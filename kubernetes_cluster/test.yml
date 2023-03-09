@@ -1,30 +1,125 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: "apps/v1"
+kind: "Deployment"
 metadata:
-  name: postgres-deployment
+  name: "django"
+  namespace: "default"
   labels:
-    app: postgres
+    app: "django"
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: postgres
-  replicas: 3
-  strategy:
-    type: RollingUpdate
+      app: "django"
   template:
     metadata:
       labels:
-        app: postgres
+        app: "django"
     spec:
       containers:
-      - name: postgres
-        image: postgres:13
+      - name: "django"
+        image: "maiempire/django_project-app"
+
+
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "django-service"
+  namespace: "default"
+  labels:
+    app: "django"
+spec:
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 8000
+  selector:
+    app: "django"
+  type: "LoadBalancer"
+  loadBalancerIP: ""
+
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "postgres-config"
+  namespace: "default"
+  labels:
+    app: "postgres"
+data:
+  POSTGRES_DB: "postgres"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"
+
+
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "postgres"
+  namespace: "default"
+  labels:
+    app: "postgres"
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: "postgres"
+  template:
+    metadata:
+      labels:
+        app: "postgres"
+    spec:
+      containers:
+      - name: "postgres"
+        image: "postgres:13"
+        env:
+        - name: "POSTGRES_DB"
+          valueFrom:
+            configMapKeyRef:
+              key: "POSTGRES_DB"
+              name: "postgres-config"
+        - name: "POSTGRES_USER"
+          valueFrom:
+            configMapKeyRef:
+              key: "POSTGRES_USER"
+              name: "postgres-config"
+        - name: "POSTGRES_PASSWORD"
+          valueFrom:
+            configMapKeyRef:
+              key: "POSTGRES_PASSWORD"
+              name: "postgres-config"
         ports:
-        - containerPort: 5432
+          - containerPort: 5432
+            name: postgres
         volumeMounts:
-        - name: postgres-volume
-          mountPath: /postgres       
+          - name: postgres-storage
+            mountPath: /var/lib/postgresql/db-data
       volumes:
-      - name: postgres-storage
-        persistentVolumeClaim: 
-          claimName: postgres-pv-claim
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pv-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+

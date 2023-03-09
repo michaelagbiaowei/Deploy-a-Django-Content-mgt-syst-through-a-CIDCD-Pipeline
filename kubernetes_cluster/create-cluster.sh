@@ -7,10 +7,9 @@
 # kubectl apply -f configmap.yml
 # kubectl apply -f storage.yml
 # # kubectl apply -f database.yml
-# kubectl apply -f t.yml
 # kubectl apply -f service.yml 
-# # # kubectl apply -f postdb.yml
-kubectl apply -f Deployment.app.db.yml
+# kubectl apply -f Deployment.app.db.yml
+kubectl apply -f test.yml
 # Step 2:
 # Create the deployment-service cluster
 # kubectl apply -f django-app-deployment.yml
