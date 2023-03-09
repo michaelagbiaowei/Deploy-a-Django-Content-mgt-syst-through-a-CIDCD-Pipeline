@@ -1,16 +1,16 @@
-# USING BASH SCRIPT TO CREATE KUBERNETES CLUSTER
+# USING BASH SCRIPT TO CREATE KUBERNETES CLUSTERS
 
 #!/usr/bin/env bash
 
 # Step 1:
-# # Create the database-service cluster
-# kubectl apply -f configmap.yml
-# kubectl apply -f storage.yml
-# # kubectl apply -f database.yml
-# kubectl apply -f service.yml 
-# kubectl apply -f Deployment.app.db.yml
-kubectl apply -f test.yml
-# Step 2:
 # Create the deployment-service cluster
-# kubectl apply -f django-app-deployment.yml
-# I'm trying to deploy an application on Kubernetes.
+kubectl apply -f django-deployment-files/app-deploy.yml
+kubectl apply -f django-deployment-files/app-service.yml
+
+# Step 2:
+# # Create the database-service cluster
+kubectl apply -f postgres-deployment-files/ConfigMap.yml
+kubectl apply -f postgres-deployment-files/postgres-deploy.yml
+kubectl apply -f postgres-deployment-files/PersistentVolumeClaim.yml
+kubectl apply -f postgres-deployment-files/postgres-service.yml
+
