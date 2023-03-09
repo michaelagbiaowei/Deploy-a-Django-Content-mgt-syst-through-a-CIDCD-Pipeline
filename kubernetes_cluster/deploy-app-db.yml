@@ -55,7 +55,7 @@ spec:
   selector:
     app: "django"
   type: "LoadBalancer"
-  loadBalancerIP: ""
+  loadBalancerIP: "54.160.143.164"
 
 
 # To link a postgres container to an app container using kubernetes, you need to follow these steps:
