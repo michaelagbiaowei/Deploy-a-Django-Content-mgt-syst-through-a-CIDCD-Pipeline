@@ -14,4 +14,4 @@ spec:
   selector:
     app: "django"
   type: "LoadBalancer"
-  loadBalancerIP: ""
+  loadBalancerIP: "54.160.143.164"
