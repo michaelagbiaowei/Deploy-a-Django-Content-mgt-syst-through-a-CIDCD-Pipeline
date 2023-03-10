@@ -6,7 +6,7 @@ services:
       APP_URL: "https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}"
     build: .
     ports:
-      - "8000:8080"
+      - "0.0.0.0:8000:8080"
     volumes:
       - .:/django
     networks: 
