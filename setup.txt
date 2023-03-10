@@ -23,7 +23,7 @@ sudo su postgres
 psql
 \l>>db
 \du>>user
-ALTER USER postres WITH PASSWORD "passwd";
+ALTER USER postres WITH PASSWORD 'passwd';
 CREATE USER user WITH SUPERUSER;
 CREATE DATABASE db;
 
