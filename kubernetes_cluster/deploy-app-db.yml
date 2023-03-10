@@ -50,12 +50,12 @@ metadata:
 spec:
   ports:
   - protocol: "TCP"
-    port: 8000
+    port: "0.0.0.0:8000"
     targetPort: 80
   selector:
     app: "django"
   type: "LoadBalancer"
-  loadBalancerIP: "54.160.143.164"
+  loadBalancerIP: "44.197.200.90"
 
 
 # To link a postgres container to an app container using kubernetes, you need to follow these steps:
