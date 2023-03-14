@@ -7,7 +7,7 @@ metadata:
   labels:
     app: "django"
 spec:
-  replicas: 3 # number of pods to run at any given time
+  replicas: 1 # number of pods to run at any given time
   selector:
     matchLabels:
       app: "django"  # label used to identify pod
