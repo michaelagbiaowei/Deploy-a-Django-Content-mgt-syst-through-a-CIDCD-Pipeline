@@ -3,11 +3,11 @@
 
 # to allow port 22, 9099, 9093, 9100
 
-resource "aws_security_group" "Bond-security-grp-rule-1" {
+resource "aws_security_group" "django-security-grp-rule-1" {
   name        = "allow_ssh_http_https"
   description = "Allow SSH, HTTP and HTTPS inbound traffic for public instances"
-  vpc_id      = aws_vpc.Bond_vpc.id
-  
+  vpc_id      = aws_vpc.django_vpc.id
+  }
 
  ingress {
     description = "HTTP"
@@ -52,17 +52,17 @@ resource "aws_security_group" "Bond-security-grp-rule-1" {
   }
 
   tags = {
-    Name = "Bond-security-grp-rule"
+    Name = "django-security-grp-rule"
   }
 }
 
 
 # Security Group to allow port 22, 80, 443, 9100, 5432
 
-resource "aws_security_group" "Bond-security-grp-rule-2" {
+resource "aws_security_group" "django-security-grp-rule-2" {
   name        = "allow_ssh_http_http"
   description = "Allow SSH, HTTP and HTTPS inbound traffic for public instances"
-  vpc_id      = aws_vpc.Bond_vpc.id
+  vpc_id      = aws_vpc.django_vpc.id
   
 
  ingress {
@@ -117,38 +117,38 @@ resource "aws_security_group" "Bond-security-grp-rule-2" {
   }
 
   tags = {
-    Name = "Bond-security-grp-rule-2"
+    Name = "django-security-grp-rule-2"
   }
 }
 
 
 #  instance 1 = these are virtual machines 
 
-resource "aws_instance" "Bond1" {
+resource "aws_instance" "django1" {
   ami             = "ami-0aaa5410833273cfe"
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.Bond-security-grp-rule-1.id]
-  subnet_id       = aws_subnet.Bond-public-subnet1.id
+  security_groups = [aws_security_group.django-security-grp-rule-1.id]
+  subnet_id       = aws_subnet.django-public-subnet1.id
   availability_zone = "eu-west-2a"
 
   tags = {
-    Name   = "Bond-1"
+    Name   = "django-1"
     source = "terraform"
   }
 }
 
 # instance 2
 
- resource "aws_instance" "Bond2" {
+ resource "aws_instance" "django2" {
   ami             = "ami-0aaa5410833273cfe"
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.Bond-security-grp-rule-2.id]
-  subnet_id       = aws_subnet.Bond-public-subnet2.id
+  security_groups = [aws_security_group.django-security-grp-rule-2.id]
+  subnet_id       = aws_subnet.django-public-subnet2.id
   availability_zone = "eu-west-2b"
   
 
   tags = {
-    Name   = "Bond-2"
+    Name   = "django-2"
     source = "terraform"
   }
 }
@@ -156,9 +156,15 @@ resource "aws_instance" "Bond1" {
 # To store the IP addresses of the instances
 
 resource "local_file" "Ip_address" {
-  filename = "~/osa-test/host-inventory"
+  filename = "config_mgt_with_ansible/inventory-1"
   content  = <<EOT
-${aws_instance.Bond1.public_ip}
-${aws_instance.Bond2.public_ip}
+${aws_instance.django1.public_ip}
+  EOT
+}
+
+resource "local_file" "Ip_address" {
+  filename = "config_mgt_with_ansible/inventory-2"
+  content  = <<EOT
+${aws_instance.django2.public_ip}
   EOT
 }
