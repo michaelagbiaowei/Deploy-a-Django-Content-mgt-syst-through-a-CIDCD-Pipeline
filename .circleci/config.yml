@@ -1,0 +1,133 @@
+version: 2.1
+orbs:
+  slack: circleci/slack@4.10.1
+  aws-cli: circleci/aws-cli@3.1.4
+
+commands:
+  notify_on_failure:
+    steps:
+      - slack/notify:
+          event: fail
+          channel: cicd-pipeline
+          template: basic_fail_1
+
+  install_awscli:
+    description: Install AWS CLI v2
+    steps:
+      - run:
+          name: Install AWS CLI v2
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            python3 -m pip install --user ansible
+
+jobs:
+  hadolint:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - run:
+          name: Test code indentation
+          command: |
+              cd django_project
+              make lint
+
+## DEPLOY INFRASTRUCTURE
+  terraform-init:
+    working_directory: /tmp/project
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - checkout
+      - run:
+          name: Terraform init
+          command: |
+            cd infra_prov_with_terraform
+            terraform init -input=false
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  terraform-plan:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Terraform plan
+          command: |
+            cd infra_prov_with_terraform
+            terraform plan -out tfapply -var-file terraform.tfvars
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  terraform-apply:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Terraform apply
+          command: |
+            cd infra_prov_with_terraform
+            terraform apply -auto-approve tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+      
+  terraform-plan-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            cd infra_prov_with_terraform
+            terraform plan -destroy -out tfdestroy -var-file terraform.tfvars
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  terraform-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destroy
+          command: |
+            cd infra_prov_with_terraform
+            terraform apply -auto-approve tfdestroy
+
+workflows:
+  version: 2
+  django-deployment:
+    jobs:
+      - terraform-init
+      - terraform-plan:
+          requires: ["terraform-init"]
+      - terraform-apply:
+          requires: ["terraform-plan"]
+      - terraform-plan-destroy:
+          requires: ["terraform-appy"]
+      - terraform-destroy:
+          requires: ["terraform-plan-destroy"]            
