@@ -9,9 +9,9 @@ metadata:
 spec:
   ports:
   - protocol: "TCP"
-    port: "0.0.0.0:8000"
+    port: 8000
     targetPort: 80
   selector:
     app: "django"
   type: "LoadBalancer"
-  loadBalancerIP: "44.197.200.90"
+  loadBalancerIP: "34.201.73.51"
