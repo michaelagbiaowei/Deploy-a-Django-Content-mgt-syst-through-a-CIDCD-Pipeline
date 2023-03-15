@@ -199,3 +199,5 @@ You can reload your rule files at runtime by sending SIGHUP signal to your Prome
 docker run --name postgres -e POSTGRES_PASSWORD='postgres' -e POSTGRES_DB='postgres' -e POSTGRES_USER='postgres' -d postgres:13
 
  docker run --name django maiempire/django_project-app -d
+
+Docker compose -p app up
