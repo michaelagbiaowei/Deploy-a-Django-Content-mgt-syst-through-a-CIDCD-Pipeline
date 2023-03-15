@@ -194,3 +194,8 @@ rule_files:
 This will load only the files specified under /etc/prometheus/rules directory. You can also use different paths or names if you prefer.
 
 You can reload your rule files at runtime by sending SIGHUP signal to your Prometheus process1.
+
+
+docker run --name postgres -e POSTGRES_PASSWORD='postgres' -e POSTGRES_DB='postgres' -e POSTGRES_USER='postgres' -d postgres:13
+
+ docker run --name django maiempire/django_project-app -d
