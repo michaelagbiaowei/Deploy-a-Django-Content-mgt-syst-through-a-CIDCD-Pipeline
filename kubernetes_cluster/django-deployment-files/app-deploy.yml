@@ -19,3 +19,5 @@ spec:
       containers:
       - name: "django"  # container name 
         image: "maiempire/django_project-app" # docker image of your django app 
+        ports:
+          - containerPort: 8000
