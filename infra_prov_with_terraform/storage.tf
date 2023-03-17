@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "hgd76rt46ry" {
   bucket = "django-static-files"
 
   tags = {
-    Name        = "My bucket"
-    Environment = "Dev"
+    Name        = "My-bucket"
+    Environment = "DevOps"
   }
 }
