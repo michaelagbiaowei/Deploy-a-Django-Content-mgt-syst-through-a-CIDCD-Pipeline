@@ -51,11 +51,6 @@ resource "aws_security_group" "django-security-grp-rule-1" {
    
   }
 
-  tags = {
-    Name = "django-security-grp-rule"
-  }
-
-
 # Security Group to allow port 22, 80, 443, 9100, 5432
 
 resource "aws_security_group" "django-security-grp-rule-2" {
@@ -158,12 +153,6 @@ resource "local_file" "Ip_address" {
   filename = "config_mgt_with_ansible/inventory-1"
   content  = <<EOT
 ${aws_instance.django1.public_ip}
-  EOT
-}
-
-resource "local_file" "Ip_address" {
-  filename = "config_mgt_with_ansible/inventory-2"
-  content  = <<EOT
 ${aws_instance.django2.public_ip}
   EOT
 }
