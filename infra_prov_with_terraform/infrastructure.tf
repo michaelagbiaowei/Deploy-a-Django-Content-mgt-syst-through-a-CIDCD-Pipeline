@@ -54,7 +54,6 @@ resource "aws_security_group" "django-security-grp-rule-1" {
   tags = {
     Name = "django-security-grp-rule"
   }
-}
 
 
 # Security Group to allow port 22, 80, 443, 9100, 5432
