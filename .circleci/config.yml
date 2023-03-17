@@ -101,7 +101,7 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform plan -destroy -out tfdestroy 
-          when: on_fail
+          # when: on_fail
       - persist_to_workspace:
           root: .
           paths:
@@ -119,7 +119,7 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform apply -auto-approve tfdestroy
-          when: on_fail
+          # when: on_fail
 
 workflows:
   version: 2
