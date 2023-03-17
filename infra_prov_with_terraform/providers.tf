@@ -3,11 +3,16 @@
 # They tell Terraform which services it needs to interact with.
 
 terraform {
+  cloud {}
+
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
+      version = "~> 4.4.0"
     }
   }
+
+  required_version = ">= 1.2.0"
 }
 
 
