@@ -68,7 +68,7 @@ jobs:
           name: Terraform plan
           command: |
             cd infra_prov_with_terraform
-            terraform plan -out tfapply -var-file terraform.tfvars
+            terraform plan
       - persist_to_workspace:
           root: .
           paths:
@@ -100,11 +100,13 @@ jobs:
           name: terraform create destroy plan
           command: |
             cd infra_prov_with_terraform
-            terraform plan -destroy -out tfdestroy -var-file terraform.tfvars
+            terraform plan -destroy
+          when: on_fail
       - persist_to_workspace:
           root: .
           paths:
             - .
+   
 
   terraform-destroy:
     docker:
@@ -117,6 +119,7 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform apply -auto-approve tfdestroy
+          when: on_fail
 
 workflows:
   version: 2
@@ -127,7 +130,7 @@ workflows:
           requires: ["terraform-init"]
       - terraform-apply:
           requires: ["terraform-plan"]
-      - terraform-plan-destroy:
-          requires: ["terraform-appy"]
-      - terraform-destroy:
-          requires: ["terraform-plan-destroy"]            
+      # - terraform-plan-destroy:
+      #     requires: ["terraform-appy"]
+      # - terraform-destroy:
+      #     requires: ["terraform-plan-destroy"]            
