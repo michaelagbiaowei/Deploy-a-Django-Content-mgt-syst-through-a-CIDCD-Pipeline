@@ -7,7 +7,7 @@ resource "aws_security_group" "django-security-grp-rule-1" {
   name        = "allow_ssh_http_https"
   description = "Allow SSH, HTTP and HTTPS inbound traffic for public instances"
   vpc_id      = aws_vpc.django_vpc.id
-  }
+  
 
  ingress {
     description = "HTTP"
@@ -50,6 +50,7 @@ resource "aws_security_group" "django-security-grp-rule-1" {
     cidr_blocks = ["0.0.0.0/0"]
    
   }
+}
 
 # Security Group to allow port 22, 80, 443, 9100, 5432
 
@@ -123,7 +124,7 @@ resource "aws_instance" "django1" {
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.django-security-grp-rule-1.id]
   subnet_id       = aws_subnet.django-public-subnet1.id
-  availability_zone = "eu-west-2a"
+  availability_zone = "us-east-1a"
 
   tags = {
     Name   = "django-1"
@@ -138,7 +139,7 @@ resource "aws_instance" "django1" {
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.django-security-grp-rule-2.id]
   subnet_id       = aws_subnet.django-public-subnet2.id
-  availability_zone = "eu-west-2b"
+  availability_zone = "us-east-1b"
   
 
   tags = {
