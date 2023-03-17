@@ -68,7 +68,7 @@ jobs:
           name: Terraform plan
           command: |
             cd infra_prov_with_terraform
-            terraform plan
+            terraform plan -out tfapply -var-file terraform.tfvars
       - persist_to_workspace:
           root: .
           paths:
@@ -100,7 +100,7 @@ jobs:
           name: terraform create destroy plan
           command: |
             cd infra_prov_with_terraform
-            terraform plan -destroy
+            terraform plan -destroy -out tfdestroy -var-file terraform.tfvars
           when: on_fail
       - persist_to_workspace:
           root: .
