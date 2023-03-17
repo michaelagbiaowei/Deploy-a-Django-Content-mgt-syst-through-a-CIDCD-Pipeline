@@ -5,7 +5,10 @@ terraform {
       version = "~> 4.53.0"
     }
   }
+}
 
+provider "aws" {
+  region     = var.region
 }
 
 # VPC = allows you to secure your virtual networking environment,
