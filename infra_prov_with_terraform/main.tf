@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.53.0"
+    }
+  }
+
+}
 
 # VPC = allows you to secure your virtual networking environment,
 #       includes your IP addresses, subnets and network gateways. 
