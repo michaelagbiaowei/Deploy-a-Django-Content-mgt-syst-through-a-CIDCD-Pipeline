@@ -268,7 +268,7 @@ resource "aws_instance" "django1" {
     Name   = "django-2"
     source = "terraform"
   }
-}updtaed
+}
 
 # To store the IP addresses of the instances
 
