@@ -1,11 +1,3 @@
-provider "aws" {
-
-   default_tags {
-     tags = {
-       hashicorp-learn = "circleci"
-     }
-   }
- }
 
 # VPC = allows you to secure your virtual networking environment,
 #       includes your IP addresses, subnets and network gateways. 
