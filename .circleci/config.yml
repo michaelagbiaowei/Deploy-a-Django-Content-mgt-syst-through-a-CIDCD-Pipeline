@@ -210,4 +210,4 @@ workflows:
       #     requires: ["terraform-appy"]
       # - terraform-destroy:
       #     requires: ["terraform-plan-destroy"]  
-      - build          
+#       - build          
