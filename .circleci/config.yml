@@ -140,7 +140,7 @@ jobs:
             cd .circleci/ansible
             ansible-playbook -i inventory.1 container-configurations.yml
 
-  build:
+  build-django-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -173,7 +173,7 @@ jobs:
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
             
-  deploy:
+  deploy-django-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -197,6 +197,29 @@ jobs:
             kubectl get pods
             kubectl get services
             
+  deploy-sock-shop:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - install_awscli
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes/*yml
+            kubectl create namespace sock-shop
+            kubectl apply -f kubernetes/
+            kubectl get services sock-shop
             
 workflows:
   version: 2
@@ -207,10 +230,14 @@ workflows:
 #           requires: ["terraform-init"]
 #       - terraform-apply:
 #           requires: ["terraform-plan"]
-      # - terraform-plan-destroy:
-      #     requires: ["terraform-appy"]
-      # - terraform-destroy:
-      #     requires: ["terraform-plan-destroy"]  
-#       - build  
-      - deploy
-#           requires: ["build"]
+#       - terraform-plan-destroy:
+#           requires: ["terraform-appy"]
+#       - terraform-destroy:
+#           requires: ["terraform-plan-destroy"]  
+#       - build-django-app:
+#            requires: ["terraform-apply"]
+#       - deploy-django-app:
+#           requires: ["terraform-apply"]
+#       - deploy-sock-shop:
+#           requires: ["terraform-apply"]
+     
