@@ -158,8 +158,8 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-          cd django_project  
-          docker compose -p app up -d
+            cd django_project  
+            docker compose -p app up -d
 
       - run:
           name: Push to Docker Hub
