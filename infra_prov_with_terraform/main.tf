@@ -116,8 +116,6 @@ resource "aws_network_acl" "django-network-acl" {
   }
 }
 
-
-
 # Security Group = A security group acts as a virtual firewall 
 # for your EC2 instances to control incoming and outgoing traffic. 
 

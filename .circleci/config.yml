@@ -101,7 +101,7 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform plan -destroy -out tfdestroy 
-          # when: on_fail
+          when: on_fail
       - persist_to_workspace:
           root: .
           paths:
@@ -119,8 +119,26 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform apply -auto-approve tfdestroy
-          # when: on_fail
+          when: on_fail
 
+# CONFIGURE INFRASTRUCTURE
+  container-configurations:
+    docker:
+      - image: cimg/python:3.10
+    steps: 
+      - checkout
+      - install_awscli
+      - install_ansible
+      - add_ssh_keys:
+          fingerprints: ["56:a1:e8:28:97:7e:ea:fc:4f:6d:f7:03:95:a8:58:5d"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Configure server
+          command: |
+            # Your code here
+            cd .circleci/ansible
+            ansible-playbook -i inventory.1 container-configurations.yml
 workflows:
   version: 2
   django-deployment:
@@ -130,7 +148,7 @@ workflows:
       #     requires: ["terraform-init"]
       # - terraform-apply:
       #     requires: ["terraform-plan"]
-      - terraform-plan-destroy
-          # requires: ["terraform-appy"]
-      - terraform-destroy:
-          requires: ["terraform-plan-destroy"]            
+      # - terraform-plan-destroy:
+      #     requires: ["terraform-appy"]
+      # - terraform-destroy:
+      #     requires: ["terraform-plan-destroy"]            
