@@ -192,7 +192,7 @@ jobs:
       - run:
           name: Deploy Docker image to EKS cluster
           command: |
-            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_cluster/*yaml
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_cluster/*yml
             kubectl apply -f kubernetes_cluster/
             kubectl get pods
             kubectl get services
@@ -211,6 +211,6 @@ workflows:
       #     requires: ["terraform-appy"]
       # - terraform-destroy:
       #     requires: ["terraform-plan-destroy"]  
-      - build  
-      - deploy:
-          requires: ["build"]
+#       - build  
+      - deploy
+#           requires: ["build"]
