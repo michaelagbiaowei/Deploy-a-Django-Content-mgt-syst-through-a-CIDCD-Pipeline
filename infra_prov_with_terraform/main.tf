@@ -256,7 +256,7 @@ resource "aws_instance" "django1" {
  resource "aws_instance" "django2" {
   ami             = "ami-0557a15b87f6559cf"
   key_name        = "volder"
-  instance_type   = "t2.medium"
+  instance_type   = "t2.micro"
   security_groups = [aws_security_group.django-security-grp-rule-2.id]
   subnet_id       = aws_subnet.django-public-subnet2.id
   availability_zone = "us-east-1b"
