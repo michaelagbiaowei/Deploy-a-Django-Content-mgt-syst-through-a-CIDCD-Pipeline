@@ -1,0 +1,51 @@
+---
+# tasks file for install-docker
+
+- name: update server
+  command: apt update
+
+- name: send docker installation script to prod
+  template: 
+    src: docker-engine.sh.j2
+    dest: "{{home}}/docker-engine.sh"
+    mode: "0777"
+    
+- name: exec mode
+  command: "sh {{home}}/docker-engine.sh"
+
+- name: send docker-compose installation script to prod
+  template: 
+    src: docker-compose.sh.j2
+    dest: "{{ home }}/docker-compose.sh"
+    mode: "0777"
+
+- name: exec mode
+  command: "sh {{ home }}/docker-compose.sh"
+
+- name: send kubectl installation script to prod
+  template:
+    src: kubectl-install.sh.j2
+    dest: "{{ home }}/kubectl-install.sh"
+    mode: "0777"
+
+- name: exec mode
+  command: "sh {{ home }}/kubectl-install.sh"
+
+
+- name: send minikube installation script to prod
+  template:
+    src: mimikube-install.sh.j2
+    dest: "{{ home }}/mimikube-install.sh"
+    mode: "0777"
+
+- name: exec mode
+  command: "sh {{ home }}/mimikube-install.sh"
+
+- name: send kompose installation script to prod
+  template:
+    src: kompose-install.sh.j2
+    dest: "{{ home }}/kompose-install.sh"
+    mode: "0777"
+
+- name: exec mode
+  command: "sh {{ home }}/kompose-install.sh"
