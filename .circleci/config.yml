@@ -171,7 +171,7 @@ jobs:
           name: Build Docker image
           command: |
             cd django_project  
-            docker-compose -p app up -d
+            docker-compose -p app up --build -d
 
       - run:
           name: Push to Docker Hub
