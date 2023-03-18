@@ -169,7 +169,7 @@ jobs:
           command: |
             cd django_project
             echo "$DOCKER_PASSWORD"
-            docker login -u $DOCKER_USERNAME $DOCKER_PASSWORD
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
             
@@ -193,6 +193,8 @@ jobs:
           command: |
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_cluster/*yaml
             kubectl apply -f kubernetes_cluster/
+            kubectl get pods
+            kubectl get services
             
             
 workflows:
