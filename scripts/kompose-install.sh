@@ -7,7 +7,7 @@
 curl -L https://github.com/kubernetes/kompose/releases/download/v1.28.0/kompose-linux-amd64 -o kompose
 
 # Step 2:
-# Priviledges
+# Privileges
 chmod +x kompose
 
 # Step3:
