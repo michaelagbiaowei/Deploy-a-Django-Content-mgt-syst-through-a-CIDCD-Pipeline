@@ -155,15 +155,6 @@ jobs:
             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             sudo mv /tmp/docker/* /usr/bin
-
-#       - run:
-#           name: Install Docker Compose
-#           environment:
-#             COMPOSE_VERSION: '1.29.2'
-#           command: |
-#             curl -L "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o ~/docker-compose
-#             chmod +x ~/docker-compose
-#             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       
       - setup_remote_docker
 
@@ -171,32 +162,38 @@ jobs:
           name: Build Docker image
           command: |
             cd django_project  
-            docker build -t django_project-app .
-            # docker-compose --project app up -d
-            # docker-compose -p app up --build -d
+            docker build -t $APP .
 
       - run:
           name: Push to Docker Hub
           command: |
             cd django_project
-            # Assumes that an image is built via `run_docker-compose.sh`
-
-            # Step 1:
-            # Create dockerpath
-            dockerpath=django_project-app
-
-            # Step 2:  
-            # Authenticate & tag
-            echo "Docker ID and Image: $dockerpath"
-            docker login -u $DOCKER_USER $DOCKER_PASS
-
-            #Step 3:
-            # Tag the images with your Docker ID
-            docker tag $dockerpath:latest maiempire/$dockerpath
-
-            # Step 4:
-            # Push image to a docker repository
-            docker push maiempire/$dockerpath
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+            docker tag $APP:latest $DOCKER_USERNAME/$APP
+            docker push $DOCKER_USERNAME/$APP
+            
+  deploy:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_cluster/*yaml
+            kubectl apply -f kubernetes_cluster/
+            
+            
 workflows:
   version: 2
   django-deployment:
@@ -210,4 +207,6 @@ workflows:
       #     requires: ["terraform-appy"]
       # - terraform-destroy:
       #     requires: ["terraform-plan-destroy"]  
-#       - build          
+      - build  
+      - deploy:
+          requires: ["build"]
