@@ -1,0 +1,22 @@
+---
+# tasks file for deploy-apps
+
+- name: update prod server
+  command: apt update
+
+- name: install git cli
+  apt:
+    name: git
+    state: present
+
+- name: deploy django app
+  git:
+    repo: "https://{{token}}@github.com/{{user}}/{{django-repo}}.git"
+    dest: "{{codebase}}/{{django-repo}}"
+  ignore_errors: yes
+
+- name: deploy sock shop app to prod
+  git:
+    repo: "https://{{token}}@github.com/{{user}}/{{microservice-repo}}.git"
+    dest: "{{codebase}}/{{microservice-repo}}"
+  ignore_errors: yes
