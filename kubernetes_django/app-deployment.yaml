@@ -28,7 +28,7 @@ spec:
         io.kompose.service: app
     spec:
       containers:
-        - image: app
+        - image: maiempire/django_project-app
           name: app
           ports:
             - containerPort: 8000
