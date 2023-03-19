@@ -313,8 +313,8 @@ spec:
   type: NodePort
   ports:
   - port: 80
-    targetPort: 8079
-    nodePort: 30001
+    targetPort: 80
+  type: LoadBalancer
   selector:
     name: front-end
 ---

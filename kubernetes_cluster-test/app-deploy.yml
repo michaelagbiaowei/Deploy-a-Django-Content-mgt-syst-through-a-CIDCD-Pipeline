@@ -1,0 +1,23 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "django"
+  namespace: "default"
+  labels:
+    app: "django"
+spec:
+  replicas: 1 # number of pods to run at any given time
+  selector:
+    matchLabels:
+      app: "django"  # label used to identify pod
+  template:
+    metadata:
+      labels:
+        app: "django"  # label used to identify pod 
+    spec:
+      containers:
+      - name: "django"  # container name 
+        image: "maiempire/django_project-app" # docker image of your django app 
+        ports:
+          - containerPort: 8000

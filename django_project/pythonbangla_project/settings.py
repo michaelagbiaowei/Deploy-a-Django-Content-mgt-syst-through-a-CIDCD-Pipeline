@@ -25,8 +25,7 @@ SECRET_KEY = '4*%$d)*xti$m5&*n%ww6r7#t2+v*e#e#18d$q#1k0zo_p^!e-2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['8000-michaelagbi-deployadjan-eahzu03nb9b.ws-eu90.gitpod.io', '54.221.64.174', '127.0.0.1', 'localhost']
-
+ALLOWED_HOSTS = [""]
 
 # Application definition
 
@@ -80,7 +79,7 @@ DATABASES = {
         "NAME": "postgres",
         "USER": "postgres",
         "PASSWORD": "postgres",
-        "HOST": "db",
+        "HOST": "postgres",
         "PORT": "5432",
     }
 }
