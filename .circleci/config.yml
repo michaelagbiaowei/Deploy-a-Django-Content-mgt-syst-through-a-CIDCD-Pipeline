@@ -246,27 +246,27 @@ workflows:
   version: 2
   django-deployment:
     jobs:
-      # - terraform-init
-      # - terraform-plan:
-      #     requires: ["terraform-init"]
-      # - hold-apply:
-      #     type: approval
-      #     requires: ["terraform-plan"]
-      # - terraform-apply:
-      #     requires: ["hold-apply"]
+      - terraform-init
+      - terraform-plan:
+          requires: ["terraform-init"]
+      - hold-apply:
+          type: approval
+          requires: ["terraform-plan"]
+      - terraform-apply:
+          requires: ["hold-apply"]
       - terraform-plan-destroy
-          # requires: ["terraform-apply"]
+          requires: ["terraform-apply"]
       - hold-destroy:
           type: approval
           requires: ["terraform-plan-destroy"]
       - terraform-destroy:
           requires: ["hold-destroy"]  
-      # - build-django-app:
-      #      requires: ["terraform-apply"]
-      # - deploy-django-app:
-          # requires: [terraform-apply, build-django-app]
-      # - deploy-sock-shop:
-          # requires: [terraform-apply, build-django-app]
-      # - deploy-prometheus:
-          # requires: [terraform-apply, build-django-app]
+      - build-django-app:
+           requires: ["terraform-apply"]
+      - deploy-django-app:
+          requires: [terraform-apply, build-django-app]
+      - deploy-sock-shop:
+          requires: [terraform-apply, build-django-app]
+      - deploy-prometheus:
+          requires: [terraform-apply, build-django-app]
      
