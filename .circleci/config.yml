@@ -135,7 +135,6 @@ jobs:
       - run:
           name: Configure server
           command: |
-            # Your code here
             cd .circleci/ansible
             ansible-playbook -i inventory.1 container-configurations.yml
 
@@ -246,23 +245,23 @@ workflows:
   version: 2
   django-deployment:
     jobs:
-#       - terraform-init
-#       - terraform-plan:
-#           requires: ["terraform-init"]
-#       - hold-apply:
-#           type: approval
-#           requires: ["terraform-plan"]
-#       - terraform-apply:
-#           requires: ["hold-apply"]
-#       - terraform-plan-destroy:
-#           requires: ["terraform-appy"]
-#       - hold-destroy:
-#           type: approval
-#           requires: ["terraform-plan-destroy"]
-#       - terraform-destroy:
-#           requires: ["hold-destroy"]  
-#       - build-django-app:
-#            requires: ["terraform-apply"]
+      - terraform-init
+      - terraform-plan:
+          requires: ["terraform-init"]
+      - hold-apply:
+          type: approval
+          requires: ["terraform-plan"]
+      - terraform-apply:
+          requires: ["hold-apply"]
+      - terraform-plan-destroy:
+          requires: ["terraform-appy"]
+      - hold-destroy:
+          type: approval
+          requires: ["terraform-plan-destroy"]
+      - terraform-destroy:
+          requires: ["hold-destroy"]  
+      - build-django-app:
+           requires: ["terraform-apply"]
 #       - deploy-django-app:
 #           requires: ["terraform-apply, build-django-app"]
 #       - deploy-sock-shop:
