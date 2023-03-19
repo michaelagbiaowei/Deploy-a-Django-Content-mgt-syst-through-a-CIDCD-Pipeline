@@ -263,7 +263,7 @@ workflows:
       #      requires: ["terraform-apply"]
       - deploy-django-app
           # requires: [terraform-apply, build-django-app]
-      # - deploy-sock-shop
+      - deploy-sock-shop
           # requires: [terraform-apply, build-django-app]
       - deploy-prometheus
           # requires: [terraform-apply, build-django-app]
