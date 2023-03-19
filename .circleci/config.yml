@@ -254,7 +254,7 @@ workflows:
       - terraform-apply:
           requires: ["hold-apply"]
       - terraform-plan-destroy:
-          requires: ["terraform-appy"]
+          requires: ["terraform-apply"]
       - hold-destroy:
           type: approval
           requires: ["terraform-plan-destroy"]
