@@ -118,7 +118,7 @@ jobs:
           name: terraform destroy
           command: |
             cd infra_prov_with_terraform
-            terraform plan -destroy -out tfdestroy
+            terraform apply -auto-approve tfdestroy
 
 # CONFIGURE INFRASTRUCTURE
   container-configurations:
