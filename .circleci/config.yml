@@ -217,7 +217,6 @@ jobs:
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_sock-shop/*yaml
             kubectl create namespace sock-shop
             kubectl apply -f kubernetes_sock-shop/
-            kubectl get services namespace=sock-shop
             
   deploy-prometheus:
     docker:
