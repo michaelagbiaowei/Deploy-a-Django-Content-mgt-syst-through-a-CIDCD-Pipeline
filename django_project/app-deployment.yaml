@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: app
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/django-framwork: "true"
+        io.kompose.service: app
+    spec:
+      containers:
+        - env:
+            - name: APP_URL
+              value: https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}
+          image: app
+          name: app
+          ports:
+            - containerPort: 8000
+              hostIP: 0.0.0.0
+          resources: {}
+          volumeMounts:
+            - mountPath: /django
+              name: app-claim0
+      restartPolicy: Always
+      volumes:
+        - name: app-claim0
+          persistentVolumeClaim:
+            claimName: app-claim0
+status: {}
