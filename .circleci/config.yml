@@ -214,9 +214,9 @@ jobs:
       - run:
           name: Deploy Docker image to EKS cluster
           command: |
-            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes/*yaml
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_sock-shop/*yaml
             kubectl create namespace sock-shop
-            kubectl apply -f kubernetes/
+            kubectl apply -f kubernetes_sock-shop/
             kubectl get services namespace=sock-shop
             
   deploy-prometheus:
@@ -238,33 +238,33 @@ jobs:
       - run:
           name: Deploy Docker image to EKS cluster
           command: |
-            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes/manifests-monitoring/*yaml
-            kubectl apply -f kubernetes/manifests-monitoring/
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_sock-shop/manifests-monitoring/*yaml
+            kubectl apply -f kubernetes_sock-shop/manifests-monitoring/
             
 workflows:
   version: 2
   django-deployment:
     jobs:
-      - terraform-init
-      - terraform-plan:
-          requires: ["terraform-init"]
-      - hold-apply:
-          type: approval
-          requires: ["terraform-plan"]
-      - terraform-apply:
-          requires: ["hold-apply"]
-      - terraform-plan-destroy:
-          requires: ["terraform-apply"]
-      - hold-destroy:
-          type: approval
-          requires: ["terraform-plan-destroy"]
-      - terraform-destroy:
-          requires: ["hold-destroy"]  
-      - build-django-app:
-           requires: ["terraform-apply"]
-#       - deploy-django-app:
-#           requires: ["terraform-apply, build-django-app"]
-#       - deploy-sock-shop:
+      # - terraform-init
+      # - terraform-plan:
+      #     requires: ["terraform-init"]
+      # - hold-apply:
+      #     type: approval
+      #     requires: ["terraform-plan"]
+      # - terraform-apply:
+      #     requires: ["hold-apply"]
+      # - terraform-plan-destroy:
+      #     requires: ["terraform-apply"]
+      # - hold-destroy:
+      #     type: approval
+      #     requires: ["terraform-plan-destroy"]
+      # - terraform-destroy:
+      #     requires: ["hold-destroy"]  
+      # - build-django-app:
+      #      requires: ["terraform-apply"]
+      # - deploy-django-app:
+          # requires: ["terraform-apply, build-django-app"]
+      - deploy-sock-shop
 #           requires: ["terraform-apply, build-django-app"]
 #       - deploy-prometheus:
 #           requires: ["terraform-apply, build-django-app"]
