@@ -26,9 +26,6 @@ spec:
         io.kompose.service: app
     spec:
       containers:
-        - env:
-            - name: APP_URL
-              value: https://8000-${GITPOD_WORKSPACE_ID}.${GITPOD_WORKSPACE_CLUSTER_HOST}
           image: app
           name: app
           ports:
