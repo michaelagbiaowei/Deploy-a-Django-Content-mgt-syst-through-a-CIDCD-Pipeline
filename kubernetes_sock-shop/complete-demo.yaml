@@ -310,11 +310,10 @@ metadata:
     name: front-end
   namespace: sock-shop
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 80
-  type: LoadBalancer
+    targetPort: 8079
   selector:
     name: front-end
 ---
@@ -887,4 +886,3 @@ spec:
     targetPort: 27017
   selector:
     name: user-db
-
