@@ -3,11 +3,12 @@ kind: Service
 metadata:
   annotations:
     kompose.cmd: kompose convert
+    kompose.service.type: LoadBalancer
     kompose.version: 1.28.0 (c4137012e)
   creationTimestamp: null
   labels:
-    io.kompose.service: app
-  name: app
+    io.kompose.service: app-tcp
+  name: app-tcp
 spec:
   ports:
     - name: "8000"
@@ -15,5 +16,6 @@ spec:
       targetPort: 8000
   selector:
     io.kompose.service: app
+  type: LoadBalancer
 status:
   loadBalancer: {}
