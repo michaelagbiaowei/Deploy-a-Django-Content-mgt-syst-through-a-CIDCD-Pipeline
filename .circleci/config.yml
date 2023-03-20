@@ -101,7 +101,7 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform plan -destroy -out tfdestroy
-          when: on_fail
+            terraform apply -auto-approve tfdestroy
       - persist_to_workspace:
           root: .
           paths:
@@ -118,8 +118,7 @@ jobs:
           name: terraform destroy
           command: |
             cd infra_prov_with_terraform
-            # terraform apply -auto-approve tfdestroy
-            terraform destroy -auto-approve
+            terraform apply -auto-approve tfdestroy
 
 
 # CONFIGURE INFRASTRUCTURE
@@ -256,17 +255,17 @@ workflows:
           requires: ["hold-apply"]
       - terraform-plan-destroy:
           requires: ["terraform-apply"]
-      - hold-destroy:
-          type: approval
-          requires: ["terraform-plan-destroy"]
-      - terraform-destroy:
-          requires: ["hold-destroy"]  
-      - build-django-app:
-           requires: ["terraform-apply"]
-      - deploy-django-app:
-          requires: [terraform-apply, build-django-app]
-      - deploy-sock-shop:
-          requires: [terraform-apply, build-django-app]
-      - deploy-prometheus:
-          requires: [terraform-apply, build-django-app]
+#       - hold-destroy:
+#           type: approval
+#           requires: ["terraform-plan-destroy"]
+#       - terraform-destroy:
+#           requires: ["hold-destroy"]  
+#       - build-django-app:
+#            requires: ["terraform-apply"]
+#       - deploy-django-app:
+#           requires: [terraform-apply, build-django-app]
+#       - deploy-sock-shop:
+#           requires: [terraform-apply, build-django-app]
+#       - deploy-prometheus:
+#           requires: [terraform-apply, build-django-app]
      
