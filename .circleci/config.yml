@@ -53,9 +53,6 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform init -input=false
-            terraform plan -out tfapply
-            terraform plan -destroy -out tfdestroy
-            terraform apply -auto-approve tfdestroy
       - persist_to_workspace:
           root: .
           paths:
@@ -104,7 +101,6 @@ jobs:
           command: |
             cd infra_prov_with_terraform
             terraform plan -destroy -out tfdestroy
-            terraform apply -auto-approve tfdestroy
       - persist_to_workspace:
           root: .
           paths:
@@ -263,12 +259,12 @@ workflows:
 #           requires: ["terraform-plan-destroy"]
 #       - terraform-destroy:
 #           requires: ["hold-destroy"]  
-#       - build-django-app:
+      - build-django-app
 #            requires: ["terraform-apply"]
-#       - deploy-django-app:
-#           requires: [terraform-apply, build-django-app]
-#       - deploy-sock-shop:
-#           requires: [terraform-apply, build-django-app]
-#       - deploy-prometheus:
-#           requires: [terraform-apply, build-django-app]
+      - deploy-django-app:
+          requires: [build-django-app]
+      - deploy-sock-shop:
+          requires: [build-django-app]
+      - deploy-prometheus:
+          requires: [build-django-app]
      
