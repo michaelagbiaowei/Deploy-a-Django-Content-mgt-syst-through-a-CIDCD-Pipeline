@@ -243,7 +243,7 @@ jobs:
 workflows:
   version: 2
   django-deployment:
-    jobs:
+    jobs: #
       # - terraform-init
 #       - terraform-plan:
 #           requires: ["terraform-init"]
