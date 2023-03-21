@@ -243,7 +243,7 @@ jobs:
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_django/celery/*yml
             kubectl apply -f kubernetes_django/celery/
             kubectl get pods
-            kubectl get services
+            kubectl get services jhfdgf
 
       - delete-all-pods
 
