@@ -10,12 +10,11 @@ Parameters:
   WorkerNodesInstanceType:
     Type: String
     Description: EC2 instance type for the worker nodes
-    Default: t2.medium
+    Default: t2.small
 
   KeyPairName:
     Type: String
     Description: Name of an existing EC2 key pair (for SSH-access to the worker node instances)
-    Default: dev
 
 Mappings:
   VpcIpRanges:
@@ -29,6 +28,12 @@ Mappings:
   EksAmiIds:
     us-east-1:
       Standard: ami-02f3f602d23f1659d
+    # us-east-2:
+    #   Standard: ami-0958a76db2d150238
+    # us-west-2:
+    #   Standard: ami-0f54a2f7d2e9c88b3
+    # eu-west-1:
+    #   Standard: ami-00c3b2d35bddd4f5c
 
 Resources:
   #============================================================================#

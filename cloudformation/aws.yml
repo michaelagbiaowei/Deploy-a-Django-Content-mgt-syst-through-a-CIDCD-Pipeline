@@ -319,9 +319,9 @@ Parameters:
     Description: The subnets where workers can be created.
     Default: circleci
 
-  VpcId:
-    Type: "AWS::EC2::VPC::Id"
-    Description: The VPC of the worker instances
+  # VpcId:
+  #   Type: "AWS::EC2::VPC::Id"
+  #   Description: The VPC of the worker instances
 
   NumWorkerNodes:
     Type: Number
