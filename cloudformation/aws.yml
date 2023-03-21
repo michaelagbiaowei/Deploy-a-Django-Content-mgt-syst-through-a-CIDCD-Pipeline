@@ -323,6 +323,34 @@ Parameters:
     Type: "AWS::EC2::VPC::Id"
     Description: The VPC of the worker instances
 
+  NumWorkerNodes:
+    Type: Number
+    Description: Number of worker nodes to create
+    Default: 3
+
+  WorkerNodesInstanceType:
+    Type: String
+    Description: EC2 instance type for the worker nodes
+    Default: t2.medium
+
+  KeyPairName:
+    Type: String
+    Description: Name of an existing EC2 key pair (for SSH-access to the worker node instances)
+    Default: dev
+
+Mappings:
+  VpcIpRanges:
+    Option1:
+      VPC: 10.0.0.0/16 # 00001010.00000000.xxxxxxxx.xxxxxxxx
+      Subnet1: 10.0.0.0/18 # 00001010.00000000.00xxxxxx.xxxxxxxx
+      Subnet2: 10.0.64.0/18 # 00001010.00000000.01xxxxxx.xxxxxxxx
+
+  # IDs of the "EKS-optimised AMIs" for the worker nodes:
+  # https://docs.aws.amazon.com/eks/latest/userguide/eks-optimized-ami.html
+  EksAmiIds:
+    us-east-1:
+      Standard: ami-02f3f602d23f1659d
+
 Conditions:
   HasNodeImageId: !Not
     - "Fn::Equals":
@@ -330,6 +358,87 @@ Conditions:
         - ""
 
 Resources:
+#============================================================================#
+  # VPC
+  #============================================================================#
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !FindInMap [VpcIpRanges, Option1, VPC]
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [VpcIpRanges, Option1, Subnet1]
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-Subnet1"
+
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !FindInMap [VpcIpRanges, Option1, Subnet2]
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs ""
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-Subnet2"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+
+  VPCGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AWS::StackName}-PublicSubnets"
+
+  InternetGatewayRoute:
+    Type: AWS::EC2::Route
+    # DependsOn is mandatory because route targets InternetGateway
+    # See here: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html#gatewayattachment
+    DependsOn: VPCGatewayAttachment
+    Properties:
+      RouteTableId: !Ref RouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  Subnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet1
+      RouteTableId: !Ref RouteTable
+
+  Subnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref Subnet2
+      RouteTableId: !Ref RouteTable
+#############################################################
   NodeInstanceRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -362,7 +471,7 @@ Resources:
       Tags:
         - Key: !Sub kubernetes.io/cluster/${ClusterName}
           Value: owned
-      VpcId: !Ref VpcId
+      VpcId: !Ref VPC
 
   NodeSecurityGroupIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
