@@ -33,7 +33,7 @@ commands:
           when: on_fail
           command: |
             echo "Destroying environment: << parameters.workflow_id >> "
-            aws cloudformation delete-stack --stack-name ${$EKS_CLUSTER_NAME}
+            aws cloudformation delete-stack --stack-name circleci
 
 jobs:
   ## DEPLOY INFRASTRUCTURE
@@ -50,11 +50,11 @@ jobs:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
-              --template-file .cloudformatiom/aws-eks.yaml \
+              --template-file cloudformatiom/aws-eks.yaml \
               --tags project=altschool \
               --stack-name circleci
 
-      - notify_on_failure
+      # - notify_on_failure
       - destroy-environment
 
   # terraform-init:
@@ -166,7 +166,7 @@ jobs:
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
 
-      - notify_on_failure
+      # - notify_on_failure
       - destroy-environment
 
   deploy-django-app:
@@ -209,7 +209,7 @@ jobs:
             kubectl get pods
             kubectl get services
 
-      - notify_on_failure
+      # - notify_on_failure
       - destroy-environment
 
   deploy-sock-shop:
@@ -235,7 +235,7 @@ jobs:
             kubectl create namespace sock-shop
             kubectl apply -f kubernetes_sock-shop/
 
-      - notify_on_failure
+      # - notify_on_failure
       - destroy-environment
 
   deploy-prometheus:
@@ -260,7 +260,7 @@ jobs:
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_sock-shop/manifests-monitoring/*yaml
             kubectl apply -f kubernetes_sock-shop/manifests-monitoring/
 
-      - notify_on_failure
+      # - notify_on_failure
       - destroy-environment
 
 workflows:
