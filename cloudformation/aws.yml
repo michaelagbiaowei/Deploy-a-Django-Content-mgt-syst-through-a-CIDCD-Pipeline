@@ -38,6 +38,7 @@ Parameters:
   ClusterControlPlaneSecurityGroup:
     Type: "AWS::EC2::SecurityGroup::Id"
     Description: The security group of the cluster control plane.
+    Default: circleci
 
   ClusterName:
     Type: String
@@ -67,6 +68,7 @@ Parameters:
   NodeGroupName:
     Type: String
     Description: Unique identifier for the Node Group.
+    Default: circleci
 
   NodeImageId:
     Type: String
@@ -315,6 +317,7 @@ Parameters:
   Subnets:
     Type: "List<AWS::EC2::Subnet::Id>"
     Description: The subnets where workers can be created.
+    Default: circleci
 
   VpcId:
     Type: "AWS::EC2::VPC::Id"
