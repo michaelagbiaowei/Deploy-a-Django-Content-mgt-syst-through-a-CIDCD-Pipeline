@@ -45,7 +45,7 @@ jobs:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
-              --template-file cloudformation/aws-eks.yml \
+              --template-file cloudformation/aws.yml \
               --tags project="altschool" \
               --stack-name circleci \
               --capabilities CAPABILITY_NAMED_IAM

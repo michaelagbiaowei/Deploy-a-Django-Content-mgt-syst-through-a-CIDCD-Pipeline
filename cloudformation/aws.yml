@@ -42,10 +42,12 @@ Parameters:
   ClusterName:
     Type: String
     Description: The cluster name provided when the cluster was created. If it is incorrect, nodes will not be able to join the cluster.
+    Default: circleci
 
   KeyName:
     Type: "AWS::EC2::KeyPair::KeyName"
     Description: The EC2 Key Pair to allow SSH access to the instances
+    Default: dev
 
   NodeAutoScalingGroupDesiredCapacity:
     Type: Number
@@ -78,7 +80,7 @@ Parameters:
 
   NodeInstanceType:
     Type: String
-    Default: t3.medium
+    Default: t2.medium
     AllowedValues:
       - a1.medium
       - a1.large
@@ -483,4 +485,3 @@ Outputs:
   NodeSecurityGroup:
     Description: The security group for the node group
     Value: !Ref NodeSecurityGroup
-
