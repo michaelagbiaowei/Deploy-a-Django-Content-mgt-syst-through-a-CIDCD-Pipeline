@@ -48,7 +48,7 @@ jobs:
               --template-file cloudformation/aws-eks.yml \
               --tags project="altschool" \
               --stack-name circleci \
-              --capabilities CAPABILITY_NAMED_IAM --profile dev
+              --capabilities CAPABILITY_NAMED_IAM
 
       # - notify_on_failure
       - destroy-environment
