@@ -23,16 +23,11 @@ commands:
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    parameters:
-      workflow_id:
-        type: string
-        default: "${$EKS_CLUSTER_NAME}"
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            echo "Destroying environment: << parameters.workflow_id >> "
             aws cloudformation delete-stack --stack-name circleci
 
 jobs:
@@ -52,7 +47,7 @@ jobs:
             aws cloudformation deploy \
               --template-file cloudformation/aws-eks.yml \
               --tags project="altschool" \
-              --stack-name circleci
+              --stack-name circleci \
               --capabilities CAPABILITY_NAMED_IAM
 
       # - notify_on_failure
