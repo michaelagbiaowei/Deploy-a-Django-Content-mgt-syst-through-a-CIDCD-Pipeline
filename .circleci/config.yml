@@ -52,7 +52,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .cloudformatiom/aws-eks.yaml \
               --tags project=altschool \
-              --stack-name "${$EKS_CLUSTER_NAME}"
+              --stack-name circleci
 
       - notify_on_failure
       - destroy-environment
