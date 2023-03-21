@@ -14,128 +14,140 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
-  notify_on_failure:
-    steps:
-      - slack/notify:
-          event: fail
-          channel: cicd-pipeline
-          template: basic_fail_1
+  # install_nodejs:
+  #   description: Install Node.js 13.8.0
+  #   steps:
+  #     - run:
+  #         name: Install Node.js 13.8.0
+  #         command: |
+  #           # Install Node.js LTS version as our base Node.js version
+  #           curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+  #           sudo apt install -y nodejs
+  #           # Use n version manager to use Node.js v13.8.0
+  #           sudo npm install --global n
+  #           sudo n 13.8.0
 
-  destroy-environment:
-    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-    steps:
-      - run:
-          name: Destroy environments
-          when: on_fail
-          command: |
-            aws cloudformation delete-stack --stack-name circleci
+  # notify_on_failure:
+  #   steps:
+  #     - slack/notify:
+  #         event: fail
+  #         channel: cicd-pipeline
+  #         template: basic_fail_1
+
+  # destroy-environment:
+  #   description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+  #   steps:
+  #     - run:
+  #         name: Destroy environments
+  #         when: on_fail
+  #         command: |
+  #           aws cloudformation delete-stack --stack-name circleci
 
 jobs:
   ## DEPLOY INFRASTRUCTURE
-  deploy-infrastructure:
+  # deploy-infrastructure:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - install_nodejs
+  #     - run:
+  #         name: Install tar utility
+  #         command: |
+  #           yum install -y tar gzip
+  #     - run:
+  #         name: Ensure back-end infrastructure exists
+  #         command: |
+
+  # NUM_WORKER_NODES=3
+  # WORKER_NODES_INSTANCE_TYPE=t2.medium
+  # STACK_NAME=circleci
+  # KEY_PAIR_NAME=dev
+  # aws cloudformation deploy \
+  #   "$@" \
+  #   --template-file cloudformation/aws-eks.yml \
+  #   --capabilities CAPABILITY_IAM \
+  #   --stack-name "$STACK_NAME" \
+  #   --parameter-overrides \
+  #       KeyPairName="$KEY_PAIR_NAME" \
+  #       NumWorkerNodes="$NUM_WORKER_NODES" \
+  #       WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
+
+  terraform-init:
+    working_directory: /tmp/project
     docker:
-      - image: amazon/aws-cli
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
     steps:
       - checkout
       - run:
-          name: Install tar utility
+          name: Terraform init
           command: |
-            yum install -y tar gzip
+            cd infra_prov_with_terraform
+            terraform init -input=false
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  terraform-plan:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
       - run:
-          name: Ensure back-end infrastructure exists
+          name: Terraform plan
           command: |
-            NUM_WORKER_NODES=3
-            WORKER_NODES_INSTANCE_TYPE=t2.medium
-            STACK_NAME=circleci
-            KEY_PAIR_NAME=dev
-            aws cloudformation deploy \
-              "$@" \
-              --template-file cloudformation/aws-eks.yml \
-              --capabilities CAPABILITY_IAM \
-              --stack-name "$STACK_NAME" \
-              --parameter-overrides \
-                  KeyPairName="$KEY_PAIR_NAME" \
-                  NumWorkerNodes="$NUM_WORKER_NODES" \
-                  WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
+            cd infra_prov_with_terraform
+            terraform plan -out tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-      # - notify_on_failure
-      - destroy-environment
+  terraform-apply:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Terraform apply
+          command: |
+            cd infra_prov_with_terraform
+            terraform apply -auto-approve tfapply
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-  # terraform-init:
-  #   working_directory: /tmp/project
-  #   docker:
-  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Terraform init
-  #         command: |
-  #           cd infra_prov_with_terraform
-  #           terraform init -input=false
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
+  terraform-plan-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            cd infra_prov_with_terraform
+            terraform plan -destroy -out tfdestroy
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
 
-  # terraform-plan:
-  #   docker:
-  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: Terraform plan
-  #         command: |
-  #           cd infra_prov_with_terraform
-  #           terraform plan -out tfapply
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
-
-  # terraform-apply:
-  #   docker:
-  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: Terraform apply
-  #         command: |
-  #           cd infra_prov_with_terraform
-  #           terraform apply -auto-approve tfapply
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
-
-  # terraform-plan-destroy:
-  #   docker:
-  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: terraform create destroy plan
-  #         command: |
-  #           cd infra_prov_with_terraform
-  #           terraform plan -destroy -out tfdestroy
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - .
-
-  # terraform-destroy:
-  #   docker:
-  #     - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - run:
-  #         name: terraform destroy
-  #         command: |
-  #           cd infra_prov_with_terraform
-  #           terraform apply -auto-approve tfdestroy
+  terraform-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destroy
+          command: |
+            cd infra_prov_with_terraform
+            terraform apply -auto-approve tfdestroy
 
   build-django-app:
     docker:
@@ -171,7 +183,7 @@ jobs:
             docker push $DOCKER_USERNAME/$APP
 
       # - notify_on_failure
-      - destroy-environment
+      # - destroy-environment
 
   deploy-django-app:
     docker:
@@ -214,7 +226,7 @@ jobs:
             kubectl get services
 
       # - notify_on_failure
-      - destroy-environment
+      # - destroy-environment
 
   deploy-sock-shop:
     docker:
@@ -240,7 +252,7 @@ jobs:
             kubectl apply -f kubernetes_sock-shop/
 
       # - notify_on_failure
-      - destroy-environment
+      # - destroy-environment
 
   deploy-prometheus:
     docker:
@@ -265,30 +277,30 @@ jobs:
             kubectl apply -f kubernetes_sock-shop/manifests-monitoring/
 
       # - notify_on_failure
-      - destroy-environment
+      # - destroy-environment
 
 workflows:
   version: 2
   django-deployment:
     jobs:
-      #       - terraform-init
-      #       - terraform-plan:
-      #           requires: ["terraform-init"]
-      #       - hold-apply:
-      #           type: approval
-      #           requires: ["terraform-plan"]
-      #       - terraform-apply:
-      #           requires: ["hold-apply"]
-      #       - terraform-plan-destroy:
-      #           requires: ["terraform-apply"]
-      #       - hold-destroy:
-      #           type: approval
-      #           requires: ["terraform-plan-destroy"]
-      #       - terraform-destroy:
-      #           requires: ["hold-destroy"]
-      - deploy-infrastructure
+      - terraform-init
+      - terraform-plan:
+          requires: ["terraform-init"]
+      - hold-apply:
+          type: approval
+          requires: ["terraform-plan"]
+      - terraform-apply:
+          requires: ["hold-apply"]
+      - terraform-plan-destroy:
+          requires: ["terraform-apply"]
+      - hold-destroy:
+          type: approval
+          requires: ["terraform-plan-destroy"]
+      - terraform-destroy:
+          requires: ["hold-destroy"]
+      # - deploy-infrastructure
       - build-django-app:
-          requires: [deploy-infrastructure]
+          requires: [terraform-apply]
       - deploy-django-app:
           requires: [build-django-app]
       - deploy-sock-shop:

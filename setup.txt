@@ -201,3 +201,8 @@ docker run --name postgres -e POSTGRES_PASSWORD='postgres' -e POSTGRES_DB='postg
  docker run --name django maiempire/django_project-app -d
 
 Docker compose -p app up
+
+cd vpc
+cim stack-up
+
+https://github.com/thestacks-io/eks-cluster
