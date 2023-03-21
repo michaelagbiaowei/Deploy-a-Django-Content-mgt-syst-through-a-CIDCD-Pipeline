@@ -203,9 +203,6 @@ jobs:
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
 
-      # - notify_on_failure
-      # - destroy-environment
-
   deploy-django-app:
     docker:
       - image: cimg/python:3.10
@@ -244,12 +241,9 @@ jobs:
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_django/celery/*yml
             kubectl apply -f kubernetes_django/celery/
             kubectl get pods
-            kubectl get services jhfdgf
+            kubectl get services
 
       - delete-all-pods
-
-      # - notify_on_failure
-      # - destroy-environment
 
   deploy-sock-shop:
     docker:
@@ -276,9 +270,6 @@ jobs:
 
       - delete-all-pods
 
-      # - notify_on_failure
-      # - destroy-environment
-
   deploy-prometheus:
     docker:
       - image: cimg/python:3.10
@@ -303,9 +294,6 @@ jobs:
 
       - delete-all-pods
 
-      # - notify_on_failure
-      # - destroy-environment
-
 workflows:
   version: 2
   django-deployment:
@@ -329,8 +317,8 @@ workflows:
       # - build-django-app:
       #     requires: [terraform-apply]
       - deploy-django-app
-      #     requires: [build-django-app]
-      # - deploy-sock-shop:
-      #     requires: [build-django-app]
-      # - deploy-prometheus:
-      #     requires: [build-django-app]
+        # requires: [build-django-app]
+      - deploy-sock-shop
+        # requires: [build-django-app]
+      - deploy-prometheus
+        # requires: [build-django-app]
