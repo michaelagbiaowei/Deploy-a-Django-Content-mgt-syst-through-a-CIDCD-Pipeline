@@ -44,19 +44,19 @@ jobs:
       - run:
           name: Ensure back-end infrastructure exists
           command: |
-          NUM_WORKER_NODES=3
-          WORKER_NODES_INSTANCE_TYPE=t2.medium
-          STACK_NAME=circleci
-          KEY_PAIR_NAME=dev
-          aws cloudformation deploy \
-            "$@" \
-            --template-file cloudformation/aws-eks.yml \
-            --capabilities CAPABILITY_IAM \
-            --stack-name "$STACK_NAME" \
-            --parameter-overrides \
-                KeyPairName="$KEY_PAIR_NAME" \
-                NumWorkerNodes="$NUM_WORKER_NODES" \
-                WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
+            NUM_WORKER_NODES=3
+            WORKER_NODES_INSTANCE_TYPE=t2.medium
+            STACK_NAME=circleci
+            KEY_PAIR_NAME=dev
+            aws cloudformation deploy \
+              "$@" \
+              --template-file cloudformation/aws-eks.yml \
+              --capabilities CAPABILITY_IAM \
+              --stack-name "$STACK_NAME" \
+              --parameter-overrides \
+                  KeyPairName="$KEY_PAIR_NAME" \
+                  NumWorkerNodes="$NUM_WORKER_NODES" \
+                  WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
 
       # - notify_on_failure
       - destroy-environment
