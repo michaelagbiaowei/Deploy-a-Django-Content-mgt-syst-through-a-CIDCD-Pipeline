@@ -50,8 +50,8 @@ jobs:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
-              --template-file cloudformatiom/aws-eks.yaml \
-              --tags project=altschool \
+              --template-file cloudformation/aws-eks.yml \
+              --tags project="altschool" \
               --stack-name circleci
 
       # - notify_on_failure
