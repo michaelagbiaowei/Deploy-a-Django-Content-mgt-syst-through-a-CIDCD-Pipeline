@@ -14,6 +14,26 @@ commands:
             unzip awscliv2.zip
             sudo ./aws/install
 
+  delete-all-pods:
+    description: Delete all pods
+    steps:
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
+            # sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_django/db/*yml
+            kubectl delete --all pods
+          when: on_fail
+
   # install_nodejs:
   #   description: Install Node.js 13.8.0
   #   steps:
@@ -225,6 +245,8 @@ jobs:
             kubectl get pods
             kubectl get services
 
+      - delete-all-pods
+
       # - notify_on_failure
       # - destroy-environment
 
@@ -251,6 +273,8 @@ jobs:
             kubectl create namespace sock-shop
             kubectl apply -f kubernetes_sock-shop/
 
+      - delete-all-pods
+
       # - notify_on_failure
       # - destroy-environment
 
@@ -276,6 +300,8 @@ jobs:
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_sock-shop/manifests-monitoring/*yaml
             kubectl apply -f kubernetes_sock-shop/manifests-monitoring/
 
+      - delete-all-pods
+
       # - notify_on_failure
       # - destroy-environment
 
@@ -299,9 +325,9 @@ workflows:
       # - terraform-destroy:
       #     requires: ["hold-destroy"]
       # # - deploy-infrastructure
-      # - build-django-app:
+      - build-django-app
       #     requires: [terraform-apply]
-      - deploy-django-app
+      # - deploy-django-app:
       #     requires: [build-django-app]
       # - deploy-sock-shop:
       #     requires: [build-django-app]
