@@ -32,6 +32,7 @@ commands:
           command: |
             # sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_django/db/*yml
             kubectl delete --all pods
+            kubectl delete --all services
           when: on_fail
 
   # install_nodejs:
