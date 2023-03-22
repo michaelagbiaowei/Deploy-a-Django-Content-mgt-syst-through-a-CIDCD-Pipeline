@@ -295,7 +295,7 @@ workflows:
 #       - terraform-destroy:
 #           requires: ["hold-destroy"]
 #       # - deploy-infrastructure
-      - build-nodejs-app:
+#       - build-nodejs-app:
 #           requires: [terraform-apply]
       - deploy-nodejs-app
 #           requires: [build-nodejs-app]
