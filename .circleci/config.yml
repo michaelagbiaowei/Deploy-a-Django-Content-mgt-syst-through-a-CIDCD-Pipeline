@@ -190,7 +190,7 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            cd node_project  
+            cd node-project  
             docker build -t nodejs .
 
       - run:
