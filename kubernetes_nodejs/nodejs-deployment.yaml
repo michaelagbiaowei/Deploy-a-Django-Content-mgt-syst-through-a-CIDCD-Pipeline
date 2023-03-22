@@ -51,7 +51,7 @@ spec:
                   key: MONGO_USERNAME
                   name: env
           image: maiempire/nodejs
-          name: maiempire/nodejs
+          name: nodejs
           ports:
             - containerPort: 8080
           resources: {}
