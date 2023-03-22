@@ -190,13 +190,13 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            cd django_project  
+            cd node_project  
             docker build -t nodejs .
 
       - run:
           name: Push to Docker Hub
           command: |
-            cd django_project
+            cd node_project
             echo "$DOCKER_PASSWORD"
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag $APP:latest $DOCKER_USERNAME/$APP
@@ -222,7 +222,7 @@ jobs:
           name: Deploy Docker image to EKS cluster
           command: |
             sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_nodejs/*yml
-            kubectl apply -f kubernetes_django/db/
+            kubectl apply -f kubernetes_nodejs/
             kubectl get pods
             kubectl get services
 
