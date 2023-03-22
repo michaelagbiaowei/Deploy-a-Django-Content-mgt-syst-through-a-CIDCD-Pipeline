@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: node-project-app-network
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/node-project-app-network: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/node-project-app-network: "true"

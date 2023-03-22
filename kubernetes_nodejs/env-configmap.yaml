@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  MONGO_DB: sharkinfo
+  MONGO_PASSWORD: password
+  MONGO_PORT: "27017"
+  MONGO_USERNAME: user
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: db-env
+  name: env
