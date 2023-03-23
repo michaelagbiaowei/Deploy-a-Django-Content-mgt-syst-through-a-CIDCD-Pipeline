@@ -18,41 +18,22 @@ commands:
     description: Delete all pods
     steps:
       - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
+            aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
           name: Deploy Docker image to EKS cluster
           command: |
             # sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_django/db/*yml
             kubectl delete --all pods
             kubectl delete --all services
           when: on_fail
-
-  terraform-plan-destroy:
-    description: Delete infrastructure
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: terraform create destroy plan
-          command: |
-            cd infra_prov_with_terraform
-            terraform plan -destroy -out tfdestroy
-          when: on_fail
-
-  terraform-destroy:
-    description: Delete infrastructure
-    steps:
-      - run:
-          name: terraform destroy
-          command: |
-            cd infra_prov_with_terraform
-            terraform apply -auto-approve tfdestroy
-          when: on_fail
-
-  notify_on_failure:
-    steps:
-      - slack/notify:
-          event: fail
-          channel: cicd-pipeline
-          template: basic_fail_1
 
   # install_nodejs:
   #   description: Install Node.js 13.8.0
@@ -67,6 +48,13 @@ commands:
   #           sudo npm install --global n
   #           sudo n 13.8.0
 
+  # notify_on_failure:
+  #   steps:
+  #     - slack/notify:
+  #         event: fail
+  #         channel: cicd-pipeline
+  #         template: basic_fail_1
+
   # destroy-environment:
   #   description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
   #   steps:
@@ -77,6 +65,21 @@ commands:
   #           aws cloudformation delete-stack --stack-name circleci
 
 jobs:
+  ## DEPLOY INFRASTRUCTURE
+  # deploy-infrastructure:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - checkout
+  #     - install_nodejs
+  #     - run:
+  #         name: Install tar utility
+  #         command: |
+  #           yum install -y tar gzip
+  #     - run:
+  #         name: Ensure back-end infrastructure exists
+  #         command: |
+
   # NUM_WORKER_NODES=3
   # WORKER_NODES_INSTANCE_TYPE=t2.medium
   # STACK_NAME=circleci
@@ -91,57 +94,6 @@ jobs:
   #       NumWorkerNodes="$NUM_WORKER_NODES" \
   #       WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
 
-  # CODE CHECKS
-
-  # build nodejs applicaton for deployment IF specified in the build property of your package.json file
-  build:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Build node-app
-          command: |
-            cd node-project
-            npm install
-            npm run build
-      - notify_on_failure
-
-  # test application functionalities IF specified in the test property of your package.json file
-  test:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Test node-app
-          command: |
-            cd node-project
-            npm install
-            npm run test
-      - notify_on_failure
-
-  # scan codebase for dependency vulnerabilities IF specified in the scan property of your package.json file
-  scan:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Scan frontend
-          command: |
-            cd node-project
-            npm install
-            npm audit fix --force
-            npm audit fix
-            npm install --save-dev html-webpack-plugin@5.5.0
-            npm update js-yaml --depth 4
-            npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
-      - notify_on_failure
-
-  ### PROVISION INFRASTRUCTURE
-  # initialize the working directory containing Terraform configuration files
   terraform-init:
     working_directory: /tmp/project
     docker:
@@ -157,9 +109,8 @@ jobs:
           root: .
           paths:
             - .
-      - notify_on_failure
 
-  # execute the actions proposed
+
   terraform-plan:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -175,9 +126,7 @@ jobs:
           root: .
           paths:
             - .
-      - notify_on_failure
 
-  # execute the actions proposed in a Terraform plan.
   terraform-apply:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -193,12 +142,36 @@ jobs:
           root: .
           paths:
             - .
-      - terraform-plan-destroy
-      - terraform-destroy
-      - notify_on_failure
 
-  # BUILD APPLICATION
-  containerize-node-app:
+  terraform-plan-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform create destroy plan
+          command: |
+            cd infra_prov_with_terraform
+            terraform plan -destroy -out tfdestroy
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  terraform-destroy:
+    docker:
+      - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: terraform destroy
+          command: |
+            cd infra_prov_with_terraform
+            terraform apply -auto-approve tfdestroy
+
+  build-nodejs-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -212,7 +185,9 @@ jobs:
             curl -L -o /tmp/docker-$VER.tgz https://get.docker.com/builds/Linux/x86_64/docker-$VER.tgz
             tar -xz -C /tmp -f /tmp/docker-$VER.tgz
             sudo mv /tmp/docker/* /usr/bin
+
       - setup_remote_docker
+
       - run:
           name: Build Docker image
           command: |
@@ -227,10 +202,8 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
-      - notify_on_failure
 
-  # DEPLOY APPLICATION
-  ship-out-node-app:
+  deploy-nodejs-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -242,14 +215,19 @@ jobs:
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
+            sed -i "s|IMAGE|$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$DOCKER_USERNAME/$APP:latest|g" kubernetes_nodejs/*yaml
             kubectl apply -f kubernetes_nodejs/
             kubectl get pods
             kubectl get services
+
       - delete-all-pods
-      - terraform-plan-destroy
-      - terraform-destroy
-      - notify_on_failure
 
   deploy-sock-shop:
     docker:
@@ -258,18 +236,22 @@ jobs:
       - checkout
       - install_awscli
       - run:
-          name: Install kubectl, Install kubectl, Configure kubectl and deploy sock shop manifest files to AWS EKS cluster
+          name: Install kubectl
           command: |
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
             kubectl create namespace sock-shop
             kubectl apply -f kubernetes_sock-shop/
+
       - delete-all-pods
-      - terraform-plan-destroy
-      - terraform-destroy
-      - notify_on_failure
 
   deploy-prometheus:
     docker:
@@ -278,21 +260,25 @@ jobs:
       - checkout
       - install_awscli
       - run:
-          name: Install kubectl, Configure kubectl and deploy prometheus manifest files to AWS EKS cluster
+          name: Install kubectl
           command: |
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Configure kubectl
+          command: |
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+      - run:
+          name: Deploy Docker image to EKS cluster
+          command: |
             kubectl apply -f kubernetes_sock-shop/manifests-monitoring/
+
       - delete-all-pods
-      - terraform-plan-destroy
-      - terraform-destroy
-      - notify_on_failure
 
 workflows:
   version: 2
-  nodejs-deployment:
+  node-deployment:
     jobs:
 #       - terraform-init
 #       - terraform-plan:
