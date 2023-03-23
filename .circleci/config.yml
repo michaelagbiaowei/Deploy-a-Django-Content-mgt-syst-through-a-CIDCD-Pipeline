@@ -329,8 +329,10 @@ workflows:
       ######################################
       #       DEPLOY ON MAIN BRANCH        #
       ######################################
+      - hold-provisioning:
+          type: approval
       - terraform-init:
-          requires: [build, test, scan]
+          requires: [hold-provisioning]
           filters:
             branches:
               only: [main]
