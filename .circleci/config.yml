@@ -333,12 +333,12 @@ workflows:
           requires: [build, test, scan]
           filters:
             branches:
-              only: [Cloud-DevOps]
+              only: [main]
       - terraform-plan:
           requires: ["terraform-init"]
           filters:
             branches:
-              only: [Cloud-DevOps]
+              only: [main]
       - hold-apply:
           type: approval
           requires: ["terraform-plan"]
@@ -346,7 +346,7 @@ workflows:
           requires: [hold-apply]
           filters:
             branches:
-              only: [Cloud-DevOps]
+              only: [main]
       # - deploy-infrastructure
       - hold-deployment:
           type: approval
