@@ -110,7 +110,6 @@ jobs:
           paths:
             - .
 
-
   terraform-plan:
     docker:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:light
@@ -278,7 +277,7 @@ jobs:
 
 workflows:
   version: 2
-  node-deployment:
+  nodejs-deployment:
     jobs:
 #       - terraform-init
 #       - terraform-plan:
