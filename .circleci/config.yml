@@ -375,4 +375,9 @@ workflows:
           requires: [containerize-nodejs-app]
           filters:
             branches:
+              only: [main]  
+      - notify_on_success:
+          requires: [deploy-prometheus]
+          filters:
+            branches:
               only: [main]
