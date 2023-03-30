@@ -54,91 +54,7 @@ commands:
           channel: cicd-pipeline
           template: basic_fail_1
 
-  # install_nodejs:
-  #   description: Install Node.js 13.8.0
-  #   steps:
-  #     - run:
-  #         name: Install Node.js 13.8.0
-  #         command: |
-  #           # Install Node.js LTS version as our base Node.js version
-  #           curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-  #           sudo apt install -y nodejs
-  #           # Use n version manager to use Node.js v13.8.0
-  #           sudo npm install --global n
-  #           sudo n 13.8.0
-
-  # destroy-environment:
-  #   description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-  #   steps:
-  #     - run:
-  #         name: Destroy environments
-  #         when: on_fail
-  #         command: |
-  #           aws cloudformation delete-stack --stack-name circleci
-
 jobs:
-  # NUM_WORKER_NODES=3
-  # WORKER_NODES_INSTANCE_TYPE=t2.medium
-  # STACK_NAME=circleci
-  # KEY_PAIR_NAME=dev
-  # aws cloudformation deploy \
-  #   "$@" \
-  #   --template-file cloudformation/aws-eks.yml \
-  #   --capabilities CAPABILITY_IAM \
-  #   --stack-name "$STACK_NAME" \
-  #   --parameter-overrides \
-  #       KeyPairName="$KEY_PAIR_NAME" \
-  #       NumWorkerNodes="$NUM_WORKER_NODES" \
-  #       WorkerNodesInstanceType="$WORKER_NODES_INSTANCE_TYPE"
-
-  # CODE CHECKS
-  # build nodejs applicaton for deployment IF specified in the build property of your package.json file
-  build:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Build node-app
-          command: |
-            cd node-project
-            npm install
-            npm run build
-      - notify_on_failure
-
-  # test application functionalities IF specified in the test property of your package.json file
-  test:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Test node-app
-          command: |
-            cd node-project
-            npm install
-            npm run test
-      - notify_on_failure
-
-  # scan codebase for dependency vulnerabilities IF specified in the scan property of your package.json file
-  scan:
-    docker:
-      - image: circleci/node:13.8.0
-    steps:
-      - checkout
-      - run:
-          name: Scan frontend
-          command: |
-            cd node-project
-            npm install
-            npm audit fix --force
-            npm audit fix
-            npm install --save-dev html-webpack-plugin@5.5.0
-            npm update js-yaml --depth 4
-            npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
-      - notify_on_failure
-
   ### PROVISION INFRASTRUCTURE
   # initialize the working directory containing Terraform configuration files
   terraform-init:
@@ -197,8 +113,8 @@ jobs:
       - notify_on_failure
 
   # BUILD APPLICATION
-  # build nodejs application into docker image before shipping out to AWS EKS cluster
-  containerize-nodejs-app:
+  # build django application into docker image before shipping out to AWS EKS cluster
+  containerize-django-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -215,13 +131,13 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            cd node-project  
-            docker build -t nodejs .
+            cd django_project  
+            docker build -t django .
 
       - run:
           name: Push to Docker Hub
           command: |
-            cd node-project
+            cd django_project
             echo "$DOCKER_PASSWORD"
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag $APP:latest $DOCKER_USERNAME/$APP
@@ -229,8 +145,8 @@ jobs:
       - notify_on_failure
 
   # DEPLOY APPLICATION
-  # ship out nodejs microservices kubernetes manifest files to AWS EKS cluster
-  ship-out-nodejs-app:
+  # ship out django microservices kubernetes manifest files to AWS EKS cluster
+  ship-out-django-app:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -243,7 +159,7 @@ jobs:
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-            kubectl apply -f kubernetes_nodejs/
+            kubectl apply -f kubernetes_django/
             kubectl get pods
             kubectl get services
       - delete-all-pods
@@ -304,31 +220,8 @@ jobs:
 
 workflows:
   version: 2
-  nodejs-deployment:
+  django-deployment:
     jobs:
-      ######################################
-      #       DEPLOY ON TEST BRANCH        #
-      ######################################
-      - build:
-          filters:
-            branches:
-              only: [Cloud-DevOps]
-      - test:
-          requires:
-            - "build"
-          filters:
-            branches:
-              only: [Cloud-DevOps]
-      - scan:
-          requires:
-            - "build"
-            - "test"
-          filters:
-            branches:
-              only: [Cloud-DevOps]
-      ######################################
-      #       DEPLOY ON MAIN BRANCH        #
-      ######################################
       - hold-provisioning:
           type: approval
       - terraform-init:
@@ -356,23 +249,23 @@ workflows:
           filters:
             branches:
               only: [main]
-      - containerize-nodejs-app:
+      - containerize-django-app:
           requires: [hold-deployment]
           filters:
             branches:
               only: [main]
-      - ship-out-nodejs-app:
-          requires: [containerize-nodejs-app]
+      - ship-out-django-app:
+          requires: [containerize-django-app]
           filters:
             branches:
               only: [main]
       - deploy-sock-shop:
-          requires: [containerize-nodejs-app]
+          requires: [containerize-django-app]
           filters:
             branches:
               only: [main]
       - deploy-prometheus:
-          requires: [containerize-nodejs-app]
+          requires: [containerize-django-app]
           filters:
             branches:
               only: [main]  
