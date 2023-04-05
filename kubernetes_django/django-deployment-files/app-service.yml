@@ -6,7 +6,7 @@ metadata:
     name: django-service
     app: django-app
 spec:
-  type: nodePort
+  type: NodePort
   ports:
     - port: 8000
       targetPort: 8000

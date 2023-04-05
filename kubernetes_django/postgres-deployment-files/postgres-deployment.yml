@@ -15,9 +15,9 @@ spec:
   
   template:
     metadata:
-    labels:
-      name: postgres-pod
-      app: django-app
+      labels:
+        name: postgres-pod
+        app: django-app
     
     spec:
       containers:
@@ -25,13 +25,13 @@ spec:
           image: postgres:13
           ports:
             - containerPort: 5432
-          volumeMounts:
-              - name: postgres-storage
-                mountPath: /var/lib/postgresql/db-data
-          volumes:
-            - name: postgres-storage
-              persistentVolumeClaim:
-                claimName: postgres-pv-claim
+          # volumeMounts:
+          #     - name: postgres-storage
+          #       mountPath: /var/lib/postgresql/db-data
+          # volumes:
+          #   - name: postgres-storage
+          #     persistentVolumeClaim:
+          #       claimName: postgres-pv-claim
           env:
             - name: POSTGRES_DB
               valueFrom:
