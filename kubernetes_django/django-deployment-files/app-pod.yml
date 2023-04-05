@@ -1,0 +1,16 @@
+apiVersion: "v1"
+kind: pod
+metadata:
+  name: django-pod
+  labels:
+    name: django-pod
+    app: django-app
+
+spec:
+  containers:
+   - name: django
+     image: maiempire/django_project-app
+     ports:
+      - containerPort: 8000
+
+

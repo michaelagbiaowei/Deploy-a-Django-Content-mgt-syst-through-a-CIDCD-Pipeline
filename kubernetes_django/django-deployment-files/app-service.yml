@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-service
+  labels:
+    name: django-service
+    app: django-app
+spec:
+  type: nodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30005
+  selector:
+    name: django-pod
+    app: django-app

@@ -1,0 +1,29 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-deployment
+  labels:
+    name: django-deployment
+    app: django-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: django-pod
+      app: django-app
+  template:
+    metadata:
+      name: django-pod
+      labels:
+        name: django-pod
+        app: django-app
+
+    spec:
+      containers:
+      - name: django
+        image: maiempire/django_project-app
+        ports:
+          - containerPort: 8000
+
+ 
