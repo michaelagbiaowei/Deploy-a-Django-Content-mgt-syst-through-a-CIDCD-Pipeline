@@ -9,8 +9,8 @@ services:
       - .:/django
     networks: 
       - app_network
-    labels:
-      kompose.service.type: LoadBalancer
+        #    labels:
+        # kompose.service.type: LoadBalancer
       
   postgres:
     image: postgres:13

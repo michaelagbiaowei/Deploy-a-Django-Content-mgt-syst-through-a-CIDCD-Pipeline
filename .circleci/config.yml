@@ -257,13 +257,13 @@ workflows:
           filters:
             branches:
               only: [main]
-      - containerize-django-app:
-          requires: [hold-deployment]
-          filters:
-            branches:
-              only: [main]
+      # - containerize-django-app:
+      #     requires: [hold-deployment]
+      #     filters:
+      #       branches:
+      #         only: [main]
       - ship-out-django-app:
-          requires: [containerize-django-app]
+          requires: [hold-deployment]
           filters:
             branches:
               only: [main]
