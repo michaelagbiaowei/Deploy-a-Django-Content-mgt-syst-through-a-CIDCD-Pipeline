@@ -6,11 +6,12 @@ metadata:
     name: django-service
     app: django-app
 spec:
-  type: NodePort
+  # type: NodePort
+  type: LoadBalancer
   ports:
     - port: 8000
       targetPort: 8000
-      nodePort: 30005
+      # nodePort: 30005
   selector:
     name: django-pod
     app: django-app

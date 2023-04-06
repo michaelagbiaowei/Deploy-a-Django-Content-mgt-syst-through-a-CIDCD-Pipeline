@@ -72,7 +72,7 @@ jobs:
           root: .
           paths:
             - .
-      - notify_on_failure
+      # - notify_on_failure
 
   # execute the actions proposed
   terraform-plan:
@@ -90,7 +90,7 @@ jobs:
           root: .
           paths:
             - .
-      - notify_on_failure
+      # - notify_on_failure
 
   # execute the actions proposed in a Terraform plan.
   terraform-apply:
@@ -110,7 +110,7 @@ jobs:
             - .
       - terraform-plan-destroy
       - terraform-destroy
-      - notify_on_failure
+      # - notify_on_failure
 
   # BUILD APPLICATION
   # build django application into docker image before shipping out to AWS EKS cluster
@@ -132,7 +132,7 @@ jobs:
           name: Build Docker image
           command: |
             cd django_project  
-            docker build -t django .
+            docker build -t django_project-app .
 
       - run:
           name: Push to Docker Hub
@@ -142,7 +142,7 @@ jobs:
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
             docker tag $APP:latest $DOCKER_USERNAME/$APP
             docker push $DOCKER_USERNAME/$APP
-      - notify_on_failure
+      # - notify_on_failure
 
   # DEPLOY APPLICATION
   # ship out django microservices kubernetes manifest files to AWS EKS cluster
@@ -159,13 +159,21 @@ jobs:
             chmod +x ./kubectl
             sudo mv ./kubectl /usr/local/bin/kubectl
             aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
-            kubectl apply -f kubernetes_django/
+            kubectl apply -f kubernetes_django/postgres-deployment-files/ConfigMap.yml
+            kubectl apply -f kubernetes_django/postgres-deployment-files/postgres-service.yml
+            kubectl apply -f kubernetes_django/postgres-deployment-files/postgres-pod.yml
+            kubectl apply -f kubernetes_django/postgres-deployment-files/postgres-deployment.yml
+            #############################################################################
+            kubectl apply -f kubernetes_django/django-deployment-files/app-service.yml
+            kubectl apply -f kubernetes_django/django-deployment-files/app-pod.yml
+            kubectl apply -f kubernetes_django/django-deployment-files/app-deployment.yml
+
             kubectl get pods
             kubectl get services
       - delete-all-pods
       - terraform-plan-destroy
       - terraform-destroy
-      - notify_on_failure
+      # - notify_on_failure
 
   # deploy sock shop microservices kubernetes manifest files to AWS EKS cluster
   deploy-sock-shop:
@@ -186,7 +194,7 @@ jobs:
       - delete-all-pods
       - terraform-plan-destroy
       - terraform-destroy
-      - notify_on_failure
+      # - notify_on_failure
 
   # deploy monitoring and visualization microservices manifest files to AWS EKS cluster
   deploy-prometheus:
@@ -206,7 +214,7 @@ jobs:
       - delete-all-pods
       - terraform-plan-destroy
       - terraform-destroy
-      - notify_on_failure
+      # - notify_on_failure
 
   # report succesful deployment status to development and operation (DevOps) team
   notify_on_success:
@@ -259,18 +267,18 @@ workflows:
           filters:
             branches:
               only: [main]
-      - deploy-sock-shop:
-          requires: [containerize-django-app]
-          filters:
-            branches:
-              only: [main]
-      - deploy-prometheus:
-          requires: [containerize-django-app]
-          filters:
-            branches:
-              only: [main]  
-      - notify_on_success:
-          requires: [deploy-prometheus]
-          filters:
-            branches:
-              only: [main]
+      # - deploy-sock-shop:
+      #     requires: [containerize-django-app]
+      #     filters:
+      #       branches:
+      #         only: [main]
+      # - deploy-prometheus:
+      #     requires: [containerize-django-app]
+      #     filters:
+      #       branches:
+      #         only: [main]  
+      # - notify_on_success:
+      #     requires: [deploy-prometheus]
+      #     filters:
+      #       branches:
+      #         only: [main]
