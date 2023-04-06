@@ -250,35 +250,34 @@ workflows:
           filters:
             branches:
               only: [main]
-      # - deploy-infrastructure
       - hold-deployment:
           type: approval
           requires: [terraform-apply]
           filters:
             branches:
               only: [main]
-      # - containerize-django-app:
-      #     requires: [hold-deployment]
-      #     filters:
-      #       branches:
-      #         only: [main]
-      - ship-out-django-app:
+      - containerize-django-app:
           requires: [hold-deployment]
           filters:
             branches:
               only: [main]
-      # - deploy-sock-shop:
-      #     requires: [containerize-django-app]
-      #     filters:
-      #       branches:
-      #         only: [main]
-      # - deploy-prometheus:
-      #     requires: [containerize-django-app]
-      #     filters:
-      #       branches:
-      #         only: [main]  
-      # - notify_on_success:
-      #     requires: [deploy-prometheus]
-      #     filters:
-      #       branches:
-      #         only: [main]
+      - ship-out-django-app:
+          requires: [containerize-django-app]
+          filters:
+            branches:
+              only: [main]
+      - deploy-sock-shop:
+          requires: [containerize-django-app]
+          filters:
+            branches:
+              only: [main]
+      - deploy-prometheus:
+          requires: [containerize-django-app]
+          filters:
+            branches:
+              only: [main]  
+      - notify_on_success:
+          requires: [deploy-prometheus]
+          filters:
+            branches:
+              only: [main]
