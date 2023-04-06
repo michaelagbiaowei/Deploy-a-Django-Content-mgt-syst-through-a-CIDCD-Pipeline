@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker-compose up
+docker compose -p tag_name up
